@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="title">VulnLM — LLM Security Lab · Cyberdes</title>
+<meta name="theme-color" content="#06131b">
+<link rel="icon" type="image/png" href="/static/assets/favicon.png">
+<link rel="apple-touch-icon" href="/static/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/static/style.css?v=11">
+</head>
+<body>
+<header class="topbar">
+<a class="brand" href="/" aria-label="VulnLM · Cyberdes"><img class="brand-logo" src="/static/assets/cyberdes-logo.png" alt="" width="31" height="36"><span class="brand-text"><span class="brand-name">Vuln<span>LM</span></span><span class="brand-company">Cyberdes</span></span><span class="brand-version">LAB</span></a>
+<nav><button id="advanced-settings-btn" type="button" class="nav-link settings-open" data-i18n="advanced_settings" hidden>Advanced settings</button><a class="nav-link" href="/docs" data-i18n="nav_api">API docs ↗</a><span class="badge" data-i18n="badge">Intentionally vulnerable</span><span class="lang" id="lang-switch"><button type="button" class="lang-btn" data-lang="en-GB">EN</button><button type="button" class="lang-btn" data-lang="tr">TR</button></span></nav>
+</header>
+
+<section id="login-view" class="login-view">
+<div class="login-hero">
+<img class="hero-logo" src="/static/assets/cyberdes-logo.png" alt="Cyberdes" width="84" height="99">
+<p class="eyebrow" data-i18n="hero_eyebrow">Cyberdes · AI security lab</p>
+<h1 class="hero-title" data-i18n="hero_title">Learn LLM and agent security through real, verifiable impact.</h1>
+<ul class="hero-points">
+<li data-i18n="hero_point_1">OWASP LLM and Agentic Top 10 scenarios</li>
+<li data-i18n="hero_point_2">Real side effects</li>
+<li data-i18n="hero_point_3">Runs locally on synthetic data</li>
+</ul>
+</div>
+<form class="panel login-card" id="login-form" autocomplete="on">
+<p class="eyebrow" data-i18n="login_eyebrow">SIGN IN</p>
+<h2 data-i18n="login_title">Sign in to the lab</h2>
+<p class="muted" data-i18n="login_sub">Log in with a synthetic lab account to start.</p>
+<label for="login-email" data-i18n="login_email">Email</label>
+<input id="login-email" type="email" autocomplete="username" data-i18n-ph="email_ph" placeholder="you@lab.local">
+<label for="login-password" data-i18n="login_password">Password</label>
+<input id="login-password" type="password" autocomplete="current-password" data-i18n-ph="password_ph" placeholder="••••••••">
+<button id="login-submit" class="primary" type="submit" data-i18n="login">Log in</button>
+<p id="login-error" class="login-error" hidden></p>
+<p class="caption"><a class="setup-link" href="/setup" data-i18n="setup_open">First-run checks</a></p>
+<p id="login-notice" class="login-notice" role="status" hidden></p>
+<div class="login-accounts">
+<p class="caption" data-i18n="login_accounts">Synthetic lab accounts: click to fill the form.</p>
+<div class="account-chips">
+<button type="button" class="account-chip" data-email="alice@lab.local" data-password="alice-lab"><strong>Alice</strong><span>user</span></button>
+<button type="button" class="account-chip" data-email="bob@lab.local" data-password="bob-lab"><strong>Bob</strong><span>user</span></button>
+<button type="button" class="account-chip admin" data-email="admin@lab.local" data-password="admin-lab"><strong>Admin</strong><span>admin</span></button>
+</div>
+</div>
+</form>
+</section>
+
+<div class="workspace" id="app-view" hidden>
+<aside class="panel sidebar">
+<p class="eyebrow" data-i18n="workspace">WORKSPACE</p><h1 data-i18n-html="headline">AI Security Lab</h1>
+<p class="muted" data-i18n="tagline">Real tools, synthetic data, observable impact.</p>
+<div class="account-box"><span id="account-avatar" class="avatar" aria-hidden="true">?</span><p id="account-status" class="muted">Not logged in</p><button id="logout-btn" type="button" class="linkbtn" data-i18n="logout">Log out</button></div>
+<div class="metrics"><div class="metric"><strong id="call-counter">0</strong><span data-i18n="model_calls">Model calls</span></div><div class="metric"><strong id="scenario-count">…</strong><span data-i18n="scenario_count">Available scenarios</span></div></div>
+<div class="toggle"><label for="pii-toggle" data-i18n-html="pii_label">PII filter <small>intentionally incomplete</small></label><input type="checkbox" id="pii-toggle"></div>
+<button id="reset-btn" type="button" class="secondary" data-i18n="new_chat">New chat</button>
+<p class="caption" data-i18n="new_chat_hint">A new chat keeps memory and lab data. An Admin can reset the entire lab from Advanced settings → Reset system.</p>
+<div class="scenario-heading"><p class="eyebrow" data-i18n="scenario_catalogue">SCENARIO CATALOGUE</p><p class="caption" data-i18n="scenario_intro">Every entry names the broken boundary and the evidence that makes an attempt count.</p><label class="sr-only" for="scenario-filter" data-i18n="scenario_filter_label">Filter scenarios</label><input id="scenario-filter" type="search" autocomplete="off" data-i18n-ph="scenario_filter_ph" placeholder="Filter by name, mapping or endpoint…"></div><div id="scenario-list"></div>
+</aside>
+<main class="panel chat-panel">
+<div class="panel-heading"><div><p class="eyebrow" data-i18n="live_experiment">LIVE EXPERIMENT</p><h2 data-i18n="chat_with_model">Chat with the model</h2></div><span id="model-chip" class="dot-label model-chip" data-i18n="local_lab">Local lab</span></div>
+<div id="model-download" class="model-download" role="status" aria-live="polite" hidden><div class="model-download-copy"><strong id="model-download-title"></strong><span id="model-download-note" class="caption"></span></div><progress id="model-download-bar" max="100" value="0"></progress><button id="model-download-cancel" type="button" class="linkbtn" data-i18n="model_cancel" hidden>Cancel download</button></div>
+<div id="chat-history" class="chat-history"><div class="message system-message"><div class="bubble" data-i18n="intro">Use only in an isolated lab environment.</div></div></div>
+<div class="composer"><label class="sr-only" for="user-input" data-i18n="message">Message</label><textarea id="user-input" rows="3" data-i18n-ph="composer_ph" placeholder="Type a question or a lab scenario…"></textarea><div class="composer-footer"><div class="composer-left"><button id="attach-btn" type="button" class="icon-btn" data-i18n-title="attach_title" title="Attach a document (indexed into RAG)">📎</button><input type="file" id="doc-file" hidden><span id="attach-chip" class="attach-chip" hidden><span id="attach-name"></span><button id="attach-clear" type="button" class="attach-clear" aria-label="remove">✕</button></span><span class="composer-hint" data-i18n="composer_hint">Enter sends · Shift+Enter new line</span></div><button id="send-btn" type="button" class="primary" data-i18n="send">Send ↗</button></div></div>
+</main>
+<aside class="panel evidence-panel"><div class="panel-heading"><div><p class="eyebrow" data-i18n="observability">OBSERVABILITY</p><h2 data-i18n="tx_evidence">Transaction evidence</h2></div></div><p class="muted" data-i18n="tx_muted">Tool results and retrieved documents. A flag appearing in text is not by itself a success.</p><pre id="trace-output">No transactions yet.</pre><div id="approval-actions" class="approval-actions"></div><h3 data-i18n="session_log">Session log</h3><div id="log-container"></div></aside>
+</div>
+<footer class="site-footer"><span class="footer-brand"><img src="/static/assets/cyberdes-logo.png" alt="" width="14" height="16">© Cyberdes Ltd.</span><span class="footer-sep" aria-hidden="true">·</span><span data-i18n="footer">VulnLM training app · Do not add real accounts, keys, or documents.</span></footer>
+
+<dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title">
+<div class="settings-header"><div><p class="eyebrow" data-i18n="lab_configuration">LAB CONFIGURATION</p><h2 id="settings-title" data-i18n="advanced_settings">Advanced settings</h2></div><button type="button" id="settings-close" class="icon-btn" aria-label="Close settings" data-i18n-title="close_settings">✕</button></div>
+<p class="settings-description" data-i18n="settings_description">Control each vulnerability independently. On enables the lab vulnerability; off applies its protection while preserving the tool or workflow.</p>
+<div class="settings-model"><div class="settings-model-copy"><p class="eyebrow" data-i18n="model_current_label">LLM MODEL</p><strong id="settings-model-name">…</strong><p id="settings-model-note" class="caption"></p></div><button id="models-open" type="button" class="primary" data-i18n="models_open">Manage LLM models</button></div>
+<div class="settings-model"><div class="settings-model-copy"><p class="eyebrow" data-i18n="documents_eyebrow">DOCUMENT PROVENANCE</p><p class="caption" data-i18n="documents_note">Approve documents for protected RAG ranking. Uploaded source labels do not grant trust.</p></div><button id="documents-open" type="button" class="secondary" data-i18n="documents_open" disabled>Manage document trust</button></div>
+<p id="settings-access" class="settings-access"></p>
+<div class="settings-toolbar"><label class="sr-only" for="settings-filter" data-i18n="scenario_filter_label">Filter scenarios</label><input id="settings-filter" type="search" data-i18n-ph="scenario_filter_ph" placeholder="Filter by name, mapping or endpoint…"><button id="settings-all-off" type="button" class="secondary" data-i18n="protect_all">Protect all</button><button id="settings-all-on" type="button" class="secondary" data-i18n="enable_all">Enable all vulnerabilities</button></div>
+<div id="settings-controls" class="settings-controls"></div>
+<p id="settings-error" class="login-error" role="alert" hidden></p>
+<div class="settings-footer"><div><strong id="settings-summary" aria-live="polite"></strong><p class="caption" data-i18n="settings_persistence">Settings apply lab-wide to new requests and persist across restarts. Existing data and completed actions are preserved. These controls do not make the lab suitable for production.</p></div><div class="settings-footer-actions"><button id="reset-open" type="button" class="danger" data-i18n="reset_system">Reset system</button><button id="settings-reload" type="button" class="secondary" data-i18n="reload_settings">Reload</button><button id="settings-save" type="button" class="primary" data-i18n="save_settings">Save settings</button></div></div>
+</dialog>
+<dialog id="reset-dialog" class="settings-dialog reset-dialog" aria-labelledby="reset-title">
+<div class="settings-header"><div><p class="eyebrow" data-i18n="reset_eyebrow">LAB RESET</p><h2 id="reset-title" data-i18n="reset_system">Reset system</h2></div><button type="button" id="reset-close" class="icon-btn" aria-label="Close" data-i18n-title="reset_cancel">✕</button></div>
+<p class="settings-description" data-i18n="reset_description">Returns the lab to its first-start state. This cannot be undone.</p>
+<ul class="reset-list"><li data-i18n="reset_item_accounts"></li><li data-i18n="reset_item_records"></li><li data-i18n="reset_item_secrets"></li><li data-i18n="reset_item_files"></li></ul>
+<label class="reset-option"><input id="reset-settings" type="checkbox" checked><span><strong data-i18n="reset_settings_label">Also restore the vulnerability settings and model selection to their defaults</strong><small data-i18n="reset_settings_note">Downloaded models are kept.</small></span></label>
+<p id="reset-error" class="login-error" role="alert" hidden></p>
+<div class="settings-footer"><div class="settings-footer-actions"><button id="reset-cancel" type="button" class="secondary" data-i18n="reset_cancel">Cancel</button><button id="reset-confirm" type="button" class="danger" data-i18n="reset_confirm">Reset the lab</button></div></div>
+</dialog>
+<dialog id="models-dialog" class="settings-dialog models-dialog" aria-labelledby="models-title">
+<div class="settings-header"><div><p class="eyebrow" data-i18n="models_eyebrow">MODEL SELECTION</p><h2 id="models-title" data-i18n="models_title">LLM models</h2></div><button type="button" id="models-close" class="icon-btn" aria-label="Close models" data-i18n-title="close_models">✕</button></div>
+<p class="settings-description" data-i18n="models_description">Choose the model the lab uses for chat and agent calls.</p>
+<p id="models-access" class="settings-access"></p>
+<p id="models-source" class="models-source"></p>
+<p id="models-vision" class="models-source"></p>
+<div id="models-list" class="models-list"></div>
+<p id="models-error" class="login-error" role="alert" hidden></p>
+<div class="settings-footer"><p class="caption" data-i18n="models_footer">The selection applies lab-wide to new model requests and persists across restarts.</p><div class="settings-footer-actions"><button id="models-reload" type="button" class="secondary" data-i18n="reload_settings">Reload</button></div></div>
+</dialog>
+<dialog id="documents-dialog" class="settings-dialog" aria-labelledby="documents-title">
+<div class="settings-header"><h2 id="documents-title" data-i18n="documents_open">Manage document trust</h2><button id="documents-close" type="button" class="icon-btn" aria-label="Close document trust" data-i18n-title="close_settings">✕</button></div>
+<p class="settings-description" data-i18n="documents_description">Only the Admin demo account can approve or revoke trust. This affects protected ranking only; the vulnerable ranking remains based on similarity. Approval does not make document instructions safe to follow.</p>
+<div id="documents-list" class="settings-controls"></div><p id="documents-error" class="login-error" role="alert" hidden></p>
+</dialog>
+<script type="module" src="/static/app.js?v=19"></script>
+</body></html>

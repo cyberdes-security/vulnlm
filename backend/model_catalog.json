@@ -1,0 +1,113 @@
+{
+  "models": [
+    {
+      "id": "qwen2.5:3b",
+      "name": "Qwen2.5 3B Instruct",
+      "family": "Qwen2.5",
+      "parameters": "3.1B",
+      "quantization": "Q4_K_M",
+      "context": 32768,
+      "size_bytes": 1929912432,
+      "capabilities": [
+        "tools"
+      ],
+      "pullable": true,
+      "description": "Laboratuvarın varsayılan modeli. Küçük ve hızlıdır; GPU olmadan, yalnızca CPU ile de rahat çalışır. Araç çağırmayı destekler ancak çok adımlı ajan akışlarında ve karmaşık talimatlarda büyük modellerden daha tutarsızdır. Yaklaşık 3 GB bellek ister.",
+      "description_en": "The lab's default model. Small and fast; it runs comfortably on CPU alone, without a GPU. It supports tool calling but is less consistent than larger models in multi-step agent flows and complex instructions. Needs about 3 GB of memory."
+    },
+    {
+      "id": "qwen2.5:7b-instruct",
+      "name": "Qwen2.5 7B Instruct",
+      "family": "Qwen2.5",
+      "parameters": "7.6B",
+      "quantization": "Q4_K_M",
+      "context": 32768,
+      "size_bytes": 4683087332,
+      "capabilities": [
+        "tools"
+      ],
+      "pullable": true,
+      "description": "Orta boy genel amaçlı model. Araç çağrılarında ve JSON çıktısında 3B modelden daha tutarlıdır. Yaklaşık 6 GB bellek ister; hız ile kalite arasında dengeli bir seçimdir.",
+      "description_en": "Mid-size general-purpose model. More consistent than the 3B model at tool calls and JSON output. Needs about 6 GB of memory and balances speed with quality."
+    },
+    {
+      "id": "qwen2.5:14b-instruct",
+      "name": "Qwen2.5 14B Instruct",
+      "family": "Qwen2.5",
+      "parameters": "14.8B",
+      "quantization": "Q4_K_M",
+      "context": 32768,
+      "size_bytes": 8988124069,
+      "capabilities": [
+        "tools"
+      ],
+      "pullable": true,
+      "description": "Qwen2.5 ailesinin büyük talimat modeli. Uzun bağlamı ve çok adımlı araç akışlarını bu ailede en iyi o yönetir. Yaklaşık 11 GB bellek ister; GPU olmadan yavaştır.",
+      "description_en": "The large instruction model of the Qwen2.5 family, and the one in that family that handles long context and multi-step tool flows best. Needs about 11 GB of memory and is slow without a GPU."
+    },
+    {
+      "id": "qwen3:8b",
+      "name": "Qwen3 8B",
+      "family": "Qwen3",
+      "parameters": "8.2B",
+      "quantization": "Q4_K_M",
+      "context": 40960,
+      "size_bytes": 5225388164,
+      "capabilities": [
+        "tools",
+        "thinking"
+      ],
+      "pullable": true,
+      "description": "Qwen3 ailesinin orta boy modeli. Araç çağırmayı ve düşünme (thinking) modunu destekler. Düşünme modu varsayılan olarak kapalıdır ve bu pencereden açılabilir. Açıkken model yanıttan önce akıl yürütür; yanıt yavaşlar, akıl yürütme metni kanıt panelinde görünür. Yaklaşık 7 GB bellek ister.",
+      "description_en": "The mid-size model of the Qwen3 family, with tool calling and a thinking mode. Thinking is off by default and can be turned on in this dialog. When on, the model reasons before answering: answers are slower and the reasoning appears in the evidence panel. Needs about 7 GB of memory."
+    },
+    {
+      "id": "qwen3:14b",
+      "name": "Qwen3 14B",
+      "family": "Qwen3",
+      "parameters": "14.8B",
+      "quantization": "Q4_K_M",
+      "context": 40960,
+      "size_bytes": 9276198565,
+      "capabilities": [
+        "tools",
+        "thinking"
+      ],
+      "pullable": true,
+      "description": "Qwen3 ailesinin büyük modeli. Karmaşık talimatlarda ve çok adımlı ajan senaryolarında tutarlı sonuçlar verir. Düşünme modu varsayılan olarak kapalıdır ve bu pencereden açılabilir. Yaklaşık 11 GB bellek ister; GPU olmadan çok yavaştır.",
+      "description_en": "The large model of the Qwen3 family. It gives consistent results for complex instructions and multi-step agent scenarios. Thinking is off by default and can be turned on in this dialog. Needs about 11 GB of memory and is very slow without a GPU."
+    },
+    {
+      "id": "qwen3-vl:4b-instruct",
+      "name": "Qwen3-VL 4B Instruct",
+      "family": "Qwen3-VL",
+      "parameters": "4.0B",
+      "quantization": "Q4_K_M",
+      "context": 262144,
+      "size_bytes": 3337225445,
+      "capabilities": [
+        "vision",
+        "tools"
+      ],
+      "pullable": true,
+      "description": "PNG/JPEG girdisi ve araç çağrısı destekleyen görsel model. Seçildiğinde metin ve görsel sohbeti yanıtlar. İndirme yaklaşık 3.3 GB; bellek ihtiyacı bağlam ve görsele göre değişir. Ollama model sayfası en az 0.12.7 sürümünü belirtir. Kullanılan Ollama ve donanımda gerçek görsel istekle doğrulayın.",
+      "description_en": "Vision model with PNG/JPEG input and tool calling. Handles text and image chat when selected. Download is about 3.3 GB; memory use depends on context and image input. The Ollama model page specifies version 0.12.7 or newer. Verify a real image request on your Ollama version and hardware."
+    },
+    {
+      "id": "qwen3.8:27b",
+      "name": "Qwen3.8 27B",
+      "family": "Qwen3.5",
+      "parameters": "27.3B",
+      "quantization": "Q4_K_M",
+      "size_bytes": 17741871939,
+      "capabilities": [
+        "vision",
+        "tools",
+        "thinking"
+      ],
+      "pullable": true,
+      "description": "Görsel girdi, araç çağrısı ve düşünme modu destekleyen 27B model. Yaklaşık 18 GB indirme ve modelin üzerinde ek çalışma belleği gerektirir. Yeterli RAM/VRAM, Docker bellek ayırması ve bu modeli destekleyen güncel Ollama gerekir. Uyumluluğu gerçek istekle doğrulayın.",
+      "description_en": "27B model with image input, tool calling and thinking. Around 18 GB download plus runtime memory overhead. Requires sufficient RAM/VRAM, Docker memory allocation and a recent Ollama version supporting this model. Verify compatibility with a real request."
+    }
+  ]
+}

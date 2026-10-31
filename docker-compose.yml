@@ -1,0 +1,156 @@
+name: vulnlm-v2
+services:
+  edge:
+    image: nginx:1.28-alpine
+    ports:
+      - "127.0.0.1:${LAB_PORT:-8000}:8080"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      app:
+        condition: service_healthy
+    networks: [lab, ingress]
+    read_only: true
+    tmpfs: [/var/cache/nginx, /var/run, /tmp]
+  app:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://llm_user:lab-only-password@db:5432/llm_lab_v2
+      DATA_DIR: /data
+      LLM_API_URL: http://model-gateway:8080/v1/chat/completions
+      MODEL_GATEWAY_URL: http://model-gateway:8080
+      LLM_MODEL: ${LLM_MODEL:-qwen2.5:3b}
+      VISION_MODEL: ${VISION_MODEL:-}
+      SAFE_HTTP_URLS: '${SAFE_HTTP_URLS:-["http://internal-service:9000/public"]}'
+      LAB_RESET_TOKEN: ${LAB_RESET_TOKEN:-}
+      ANONYMIZED_TELEMETRY: "False"
+    volumes:
+      - lab_data_v2:/data
+      - ./frontend:/frontend:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      model-gateway:
+        condition: service_healthy
+      internal-service:
+        condition: service_started
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    mem_limit: 2g
+    cpus: 2
+    networks: [lab]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)"]
+      interval: 15s
+      timeout: 6s
+      retries: 5
+      start_period: 45s
+  db:
+    image: postgres:15.18-bookworm
+    environment:
+      POSTGRES_USER: llm_user
+      POSTGRES_PASSWORD: lab-only-password
+      POSTGRES_DB: llm_lab_v2
+    volumes: [postgres_data_v2:/var/lib/postgresql/data]
+    networks: [lab]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U llm_user -d llm_lab_v2"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  model-gateway:
+    # The app is exploitable on purpose (SSRF/RCE), so it never reaches Ollama's unauthenticated API
+    # (delete/push/create). It gets chat and downloads for catalogue models only, through this gateway.
+    # OLLAMA_URL=http://host.docker.internal:11434 uses the host's Ollama and its GPU instead.
+    image: python:3.13-slim-bookworm
+    command: [python, /service/model_gateway.py]
+    environment:
+      OLLAMA_URL: ${OLLAMA_URL:-http://ollama:11434}
+      MODEL_CATALOG: /service/model_catalog.json
+      LLM_MODEL: ${LLM_MODEL:-qwen2.5:3b}
+      VISION_MODEL: ${VISION_MODEL:-}
+    volumes:
+      - ./backend/model_gateway.py:/service/model_gateway.py:ro
+      - ./backend/model_catalog.json:/service/model_catalog.json:ro
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    networks: [lab, model-download]
+    depends_on:
+      ollama:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 5s
+  ollama:
+    image: ollama/ollama:0.35.1
+    volumes: [ollama_data_v2:/root/.ollama]
+    # Off the lab network: only the gateway reaches it. Egress lets the gateway download catalogue models.
+    networks: [model-download]
+    depends_on:
+      model-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [CMD, ollama, list]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+  model-init:
+    # The only service with egress: pulls through its own loopback Ollama server, then exits.
+    image: ollama/ollama:0.35.1
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        if [ -n "$${EXTERNAL_OLLAMA_URL}" ]; then
+          echo "External Ollama selected; the model gateway checks/downloads the active model there."
+          exit 0
+        fi
+        ollama serve >/dev/null 2>&1 &
+        server=$$!
+        tries=0
+        until ollama list >/dev/null 2>&1; do
+          tries=$$((tries + 1)); [ "$$tries" -lt 60 ] || exit 1; sleep 1
+        done
+        for model in "$${MODEL}" "$${VISION_MODEL}"; do
+          [ -z "$$model" ] && continue
+          if ollama show "$$model" >/dev/null 2>&1; then
+            echo "Using cached model: $$model"
+          else
+            ollama pull "$$model" || exit 1
+          fi
+        done
+        kill "$$server"; wait "$$server"; exit 0
+    environment:
+      OLLAMA_HOST: 127.0.0.1:11434
+      EXTERNAL_OLLAMA_URL: ${OLLAMA_URL:-}
+      MODEL: ${LLM_MODEL:-qwen2.5:3b}
+      VISION_MODEL: ${VISION_MODEL:-}
+    volumes: [ollama_data_v2:/root/.ollama]
+    networks: [model-download]
+    restart: "no"
+  internal-service:
+    image: python:3.13-slim-bookworm
+    command: [python, /service/internal_service.py]
+    volumes: [./backend/internal_service.py:/service/internal_service.py:ro]
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    networks: [lab]
+networks:
+  lab:
+    internal: true
+  model-download: {}
+  ingress: {}
+volumes:
+  lab_data_v2:
+  postgres_data_v2:
+  ollama_data_v2:

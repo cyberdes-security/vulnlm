@@ -1,0 +1,7 @@
+__pycache__
+*.pyc
+*.log
+.env
+lab_data
+chroma_db_store
+flag.txt

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VulnLM · Setup</title><link rel="icon" href="/static/assets/favicon.png"><link rel="stylesheet" href="/static/style.css?v=12">
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/"><img class="brand-logo" src="/static/assets/cyberdes-logo.png" alt="" width="31" height="36"><span class="brand-name">Vuln<span>LM</span></span></a><nav><a class="nav-link" href="/" data-i18n="setup_enter">Open the lab</a><span class="lang" id="setup-language"><button type="button" class="lang-btn" data-lang="en-GB">EN</button><button type="button" class="lang-btn" data-lang="tr">TR</button></span></nav></header>
+<main class="setup-page panel">
+<p class="eyebrow">VULNLM · SETUP</p><h1 data-i18n="setup_title">Check your lab setup</h1>
+<p class="muted" data-i18n="setup_intro">Check the database, document index and active model before your first experiment. No sign-in is required.</p>
+<p id="setup-status" class="setup-status" role="status" aria-live="polite" data-i18n="setup_wait">Checking dependencies…</p>
+<dl class="setup-checks"><div><dt data-i18n="setup_database">Database and schema</dt><dd id="check-database">…</dd></div><div><dt data-i18n="setup_rag">Document index</dt><dd id="check-rag">…</dd></div><div><dt data-i18n="setup_model">Active model</dt><dd id="check-model">…</dd></div></dl>
+<p id="setup-model" class="caption"></p>
+<div id="setup-download" role="status" hidden><p data-i18n="setup_download">Model download in progress</p><progress id="setup-progress" max="100"></progress></div>
+<p class="muted" data-i18n="setup_bundled">The default installation includes Ollama in Docker and downloads its first model automatically. You do not need Ollama or Python installed on your computer.</p>
+<div id="setup-help"><p class="muted" data-i18n="setup_help"></p><p class="caption" data-i18n="setup_logs"></p><pre>docker compose logs --tail 80 model-init model-gateway ollama app</pre><p class="caption" data-i18n="setup_before_app"></p></div>
+<div class="setup-actions"><button class="primary" id="setup-refresh" type="button" data-i18n="setup_refresh">Check again</button><a class="linkbtn" href="/" data-i18n="setup_enter">Open the lab</a></div>
+<p class="caption" data-i18n="setup_poll"></p><p class="caption" data-i18n="setup_scope"></p>
+</main><script type="module" src="/static/js/setup.js"></script>
+</body></html>

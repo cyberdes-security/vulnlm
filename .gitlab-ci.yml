@@ -1,0 +1,47 @@
+# VulnLM tests. GitLab reads only the root .gitlab-ci.yml; include this file from it:
+#   include:
+#     - local: vulnlm/.gitlab-ci.yml
+# Needs a runner with the Docker executor (image + services).
+.vulnlm-tests:
+  stage: test
+  image: python:3.13-slim-bookworm
+  rules:
+    - changes: [vulnlm/**/*]
+  variables:
+    PIP_CACHE_DIR: $CI_PROJECT_DIR/.cache/pip
+  cache:
+    key:
+      files: [vulnlm/backend/requirements.lock]
+    paths: [.cache/pip]
+  before_script:
+    - cd vulnlm
+    - python -m pip install -r requirements-dev.txt
+  script:
+    - python -m pytest -q --junitxml=test-results/junit.xml
+
+  artifacts:
+    when: always
+    reports:
+      junit: vulnlm/test-results/junit.xml
+    expire_in: 14 days
+
+# Empty VULNLM_TEST_DATABASE_URL selects the temporary SQLite database from tests/conftest.py.
+# Real Chromium XSS/CSRF checks do not depend on the database; run them once, here.
+vulnlm:sqlite:
+  extends: .vulnlm-tests
+  variables:
+    RUN_BROWSER_TESTS: "1"
+  before_script:
+    - cd vulnlm
+    - python -m pip install -r requirements-dev.txt
+    - python -m playwright install --with-deps chromium
+
+vulnlm:postgres:
+  extends: .vulnlm-tests
+  services:
+    - name: postgres:15.18-bookworm
+      alias: postgres
+  variables:
+    POSTGRES_PASSWORD: vulnlm-test
+    POSTGRES_DB: vulnlm_test
+    VULNLM_TEST_DATABASE_URL: postgresql+asyncpg://postgres:vulnlm-test@postgres:5432/vulnlm_test
