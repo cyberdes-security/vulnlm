@@ -9,6 +9,7 @@ import uuid
 from pathlib import Path
 from urllib.parse import unquote
 
+import httpx
 import pytest
 from fastapi.testclient import TestClient
 from main import app
@@ -90,15 +91,15 @@ DIRECT = [
 
 
 @pytest.fixture
-def doc_clients(client):
+def doc_clients(client, external_site):
     alice = client
     bob, admin = TestClient(app), TestClient(app)
     for session, name in ((alice,'alice'),(bob,'bob'),(admin,'admin')):
         expect(session.post('/auth/login', json={'email':name+'@lab.local','password':name+'-lab'}))
     state = expect(admin.get('/lab/settings'))
     expect(admin.put('/lab/settings', json={'revision':state['revision'], 'vulnerabilities':dict.fromkeys(IDS, True)}))
-    yield {'c':alice, 'bob':bob, 'admin':admin, 'expect':expect, 'base64':base64,
-           'json':json, 'time':time, 'uuid':uuid, 'Path':Path}
+    yield {'c':alice, 'bob':bob, 'admin':admin, 'expect':expect, 'base64':base64, 'httpx':httpx,
+           'json':json, 'time':time, 'uuid':uuid, 'Path':Path, 'SITE':external_site}
     bob.close(); admin.close()
 
 

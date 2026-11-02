@@ -72,7 +72,7 @@ python scripts/model_probe.py --url "$VULNLM_URL" \
 
 The expected value is not sent in the user prompt. Obtain a fresh file after every reset. Keep experiment artifacts out of version control; they can contain prompts and synthetic secrets.
 
-For HTTP-result, agent-sender and optional image experiments, use the [extended walkthrough](extended-scenarios.md). The app-reachable tool address in Compose is `http://app:8000`, independent of the published host port.
+For HTTP-result, agent-sender and optional image experiments, use the [extended walkthrough](extended-scenarios.md). Attacker pages are published on the external site through `SITE_PORT`; the app reaches them as `http://cyberdes-vulnerable-cloud.example`, independent of the published host port.
 
 The model matrix selects and, when needed, downloads **every catalogue model**, including large ones. It mutates its target lab and temporarily changes the lab-wide model; do not run it alongside another experiment:
 

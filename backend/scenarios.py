@@ -282,11 +282,11 @@ SCENARIOS = [
          evidence='Same-site cross-origin form kurban çereziyle model çağrısı yapar; araç etkisi model seçimine bağlıdır.',
          evidence_en="A same-site cross-origin form invokes the model with victim cookies; tool effects depend on the model's choice."),
 
-    dict(id='tool-result-injection', group='boundary', mapping='Lab trust boundary', surface='/tool-results → http_tool → /chat',
+    dict(id='tool-result-injection', group='boundary', mapping='Lab trust boundary', surface='external-site → http_tool → /chat',
          title='Araç sonucundan dolaylı injection',
          title_en='Indirect injection through a tool result',
-         detail="Araç dönüş gövdesi model bağlamına veri olarak değil düz metin olarak eklenir. Talimat içeren bir fixture yayınlayıp modele getirtin, ardından sonraki model isteğini ve oluşan bellek kaydını inceleyin.",
-         detail_en="A tool's response body is appended to the model context as plain text rather than as data. Publish a fixture containing an instruction, have the model fetch it, then inspect the next model request and the memory record it creates.",
+         detail="Araç dönüş gövdesi model bağlamına veri olarak değil düz metin olarak eklenir. Saldırganın harici sitesinde talimat içeren bir sayfa yayınlayıp modele getirtin, ardından sonraki model isteğini ve oluşan bellek kaydını inceleyin.",
+         detail_en="A tool's response body is appended to the model context as plain text rather than as data. Publish a page containing an instruction on the attacker's external site, have the model fetch it, then inspect the next model request and the memory record it creates.",
          evidence='Gerçek HTTP yanıtındaki talimat sonraki model isteğine girer; seçilen araç gerçek bellek kaydı oluşturur.',
          evidence_en="Instructions from a real HTTP response enter the next model request; the selected tool creates a real memory record."),
 

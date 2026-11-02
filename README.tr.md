@@ -106,7 +106,7 @@ Diğer deneylerde aynı istek, temiz veriyle zafiyet açıkken ve kapalıyken ka
 | Belleğin doğrudan kullanıcılar arası okunması · Lab trust boundary | `/memory` | Alice oturumunun Bob tarafından yazılmış bellek içeriğini API üzerinden alması |
 | Başka konuşmanın geçmişine yazma · Lab trust boundary | `/chat` | Bilinen conversation_id içine saldırgan turu eklenir; asıl sahibin sonraki model bağlamına girer |
 | Sohbet ve araç eyleminde CSRF · Lab trust boundary | `/chat/form` | Same-site cross-origin form kurban çereziyle model çağrısı yapar; araç etkisi model seçimine bağlıdır |
-| Araç sonucundan dolaylı injection · Lab trust boundary | `/tool-results` → `http_tool` → `/chat` | Gerçek HTTP yanıtındaki talimat sonraki model isteğine girer; seçilen araç gerçek bellek kaydı oluşturur |
+| Araç sonucundan dolaylı injection · Lab trust boundary | `external-site` → `http_tool` → `/chat` | Gerçek HTTP yanıtındaki talimat sonraki model isteğine girer; seçilen araç gerçek bellek kaydı oluşturur |
 | İnsan onayı ve yürütme uyuşmazlığı · Lab trust boundary | `/approvals/{id}` | Onaylanan alıcı/tutar saklanırken değişen öneri yürütülür; snapshot ve DB etkisi karşılaştırılır |
 | RAG sıralamasını saldırgan belgelerle doldurma · Lab trust boundary | `/upload_doc` → `/rag/search` | Üç saldırgan belge ilk üç sonucu doldurup güvenilir Cedar belgesini dışarı iter |
 | Ajanlar arası gönderici sahteciliği · Lab trust boundary | `/agents/messages`, `/agents/research` | Araştırmacı için reddedilen rol değişimi, doğrulanmayan supervisor göndericisiyle kabul edilir |
@@ -131,12 +131,14 @@ flowchart LR
     App --> Index
     App --> DB[(PostgreSQL)]
     App --> Internal[Dahili HTTP servisi]
+    Edge --> Site[Harici site: saldırgan sayfaları]
+    App --> Site
     App --> Gateway[Model ağ geçidi]
     Gateway --> Ollama[Docker veya host Ollama]
     Ollama -. model indirme .-> Registry[Ollama kayıt deposu]
 ```
 
-Araçlar ve Chroma dizini `app` konteynerinin içinde, onun yetkileriyle çalışır; Chroma gömülüdür ve verisini lab volume'ünde tutar. Uygulama yalnızca `internal` olan `lab` Docker ağındadır ve internete erişemez. Yalnızca Nginx loopback portu yayınlar; başka hiçbir servis host portu açmaz. Uygulama Ollama’ya yalnızca sohbet ve katalog modeli indirme işlemlerini ileten model ağ geçidi üzerinden erişir. Ağ geçidi ve Ollama ayrıca indirmeler için internete çıkabilen ayrı bir `model-download` ağını paylaşır; dahili Ollama kullanılırken tek seferlik `model-init` servisi ilk açılışta varsayılan modeli bu ağ üzerinden indirir. Host Ollama seçimi araçları host’a taşımaz. Docker izolasyonu uygulamadaki eğitim zafiyetlerinden ayrıdır; daha güçlü ayrım için ayrı bir sanal makine kullanın.
+Araçlar ve Chroma dizini `app` konteynerinin içinde, onun yetkileriyle çalışır; Chroma gömülüdür ve verisini lab volume'ünde tutar. Uygulama yalnızca `internal` olan `lab` Docker ağındadır ve internete erişemez. Yalnızca Nginx loopback port yayınlar: lab için `LAB_PORT`, saldırgan web sitesinin yerini tutan harici site için `SITE_PORT`; başka hiçbir servis host portu açmaz. Uygulama Ollama’ya yalnızca sohbet ve katalog modeli indirme işlemlerini ileten model ağ geçidi üzerinden erişir. Ağ geçidi ve Ollama ayrıca indirmeler için internete çıkabilen ayrı bir `model-download` ağını paylaşır; dahili Ollama kullanılırken tek seferlik `model-init` servisi ilk açılışta varsayılan modeli bu ağ üzerinden indirir. Host Ollama seçimi araçları host’a taşımaz. Docker izolasyonu uygulamadaki eğitim zafiyetlerinden ayrıdır; daha güçlü ayrım için ayrı bir sanal makine kullanın.
 
 Arayüz, FastAPI’nin sunduğu HTML/CSS/JavaScript modülleridir; ayrı frontend sunucusu veya derleme adımı yoktur. [İşletim rehberi](docs/operations.tr.md) şema geçişlerini, belge kaynağı onaylarını ve metrikleri açıklar.
 

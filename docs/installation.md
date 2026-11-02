@@ -102,7 +102,7 @@ Host Ollama binds `127.0.0.1:11434` by default. Especially on Linux, container a
 
 ## Change the port, reopen or stop
 
-If 8000 is occupied, change `.env` from `LAB_PORT=8000` to e.g. `LAB_PORT=18000` and rerun. Open `http://127.0.0.1:18000`. The installer never overwrites an existing `.env`; exported environment variables can override its values.
+If 8000 is occupied, change `.env` from `LAB_PORT=8000` to e.g. `LAB_PORT=18000` and rerun. Open `http://127.0.0.1:18000`. The external site used by the tool-result scenario listens on `SITE_PORT` (default 8001); change it the same way if that port is occupied. The installer never overwrites an existing `.env`; exported environment variables can override its values.
 
 ```bash
 # Subsequent startup; keeps data and models.
@@ -151,7 +151,7 @@ Save changes to apply them lab-wide to new requests. Settings persist in `DATA_D
 
 Protected MCP tools remain discoverable and callable. Tool edits invalidate approval, calls must match the approved revision, and approved default arguments cannot be replaced. Privileged model actions are presented for explicit **Approve and execute** confirmation in the evidence panel.
 
-Protected tools keep a defined scope: shell commands use an argument list and a supported command set; Python accepts calculations, output, `math`/`json`, and text file operations within the public workspace. Protected SQL uses a read-only, user-scoped snapshot. HTTP accepts public IP destinations or exact URLs configured in `SAFE_HTTP_URLS`; the default public lab resource is `http://internal-service:9000/public`.
+Protected tools keep a defined scope: shell commands use an argument list and a supported command set; Python accepts calculations, output, `math`/`json`, and text file operations within the public workspace. Protected SQL uses a read-only, user-scoped snapshot. HTTP accepts public IP destinations or exact URLs configured in `SAFE_HTTP_URLS`; the default public lab resources are `http://internal-service:9000/public` and the external site's `http://cyberdes-vulnerable-cloud.example/status`.
 
 Prompt, memory, image, and tool-result controls separate untrusted reference data and enforce permissions and action approval. They do not guarantee model instruction compliance. Settings are training controls within the lab process; they are not a substitute for deployment isolation, particularly while arbitrary execution scenarios are enabled.
 
@@ -195,7 +195,7 @@ bash scripts/install.sh
 
 The model must support the chat API's `image_url` input, and tool calls or the lab JSON fallback for action-based experiments. Check available RAM/VRAM and Docker memory allocation for the selected model; the project does not cap Ollama memory. With neither `VISION_MODEL` nor an image-capable active model, `/chat/image` returns 503. Image bytes are retained in the intentionally exposed raw audit; saved conversation history keeps only text and an omission marker, so reattach images when needed. PDF/OCR is not implemented.
 
-Swagger documents the API endpoints, and the UI lists the scenario catalogue. Startup initializes the required tables and preserves lab data. A full reset clears approvals, agent messages, and HTTP fixtures along with other lab records. After editing backend code, rebuild the app with `docker compose up --build -d app`.
+Swagger documents the API endpoints, and the UI lists the scenario catalogue. Startup initializes the required tables and preserves lab data. A full reset clears approvals and agent messages along with other lab records; pages on the external site remain until that service restarts. After editing backend code, rebuild the app with `docker compose up --build -d app`.
 
 
 ## Native development

@@ -1,4 +1,4 @@
-"""Trust boundary exercises for tool results, approvals, agent identity, and images.
+"""Trust boundary exercises for approvals, agent identity, and images.
 
 The research worker and executor are logical agents in one process.
 The executor intentionally trusts the message sender supplied by the caller.
@@ -9,13 +9,12 @@ import json
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import PlainTextResponse
 from pydantic import ValidationError
 from sqlalchemy import select
 from auth import current_user
 from database import get_db
-from models import ToolResultFixture, PaymentApproval, AgentEnvelopeRecord
-from schemas import ToolResultInput, PaymentProposal, AgentEnvelope, AgentResearchInput
+from models import PaymentApproval, AgentEnvelopeRecord
+from schemas import PaymentProposal, AgentEnvelope, AgentResearchInput
 import tools
 import llm_client
 from scenario_controls import enabled, consume_model_request
@@ -37,21 +36,6 @@ def image_content(message, data_url):
         raise HTTPException(422, 'Use a base64 PNG/JPEG image of at most 1 MB') from exc
     return [{'type': 'text', 'text': message},
             {'type': 'image_url', 'image_url': {'url': data_url}}]
-
-@router.post('/tool-results')
-async def create_tool_result(data: ToolResultInput, user=Depends(current_user), db=Depends(get_db)):
-    row = ToolResultFixture(owner_id=user['id'], content=data.content)
-    db.add(row)
-    await db.commit()
-    return {'id': row.id, 'path': f'/tool-results/{row.id}'}
-
-@router.get('/tool-results/{fixture_id}', response_class=PlainTextResponse)
-async def tool_result(fixture_id: int, db=Depends(get_db)):
-    # Public synthetic fixture so the real http_tool can fetch attacker-authored text.
-    row = await db.get(ToolResultFixture, fixture_id)
-    if not row:
-        raise HTTPException(404, 'Fixture not found')
-    return row.content
 
 def approval_view(row):
     return {'id': row.id, 'owner_id': row.owner_id,

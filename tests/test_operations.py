@@ -19,7 +19,8 @@ def test_legacy_migration_preserves_data_and_does_not_infer_trust(tmp_path):
     for _ in range(2):
         with engine.begin() as connection:
             assert upgrade(connection) == HEAD
-            assert connection.execute(select(revisions.c.revision).order_by(revisions.c.revision)).scalars().all() == [1,2]
+            assert connection.execute(select(revisions.c.revision).order_by(revisions.c.revision)).scalars().all() == [1,2,3]
+            assert not inspect(connection).has_table('tool_result_fixtures')
             assert connection.execute(text('SELECT content FROM documents WHERE id=91')).scalar() == 'keep this'
             assert connection.execute(text('SELECT count(*) FROM document_trust')).scalar() == 0
     engine.dispose()
