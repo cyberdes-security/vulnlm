@@ -256,7 +256,7 @@ async def definitions(db):
             specs[row.name]={'description':row.description if enabled('tool-poisoning') else SPECS[row.target]['description'],'parameters':{'type':'object','properties':props,'required':list(props)}}
     return [{'type':'function','function':{'name':name,**s}} for name,s in specs.items()]
 
-async def execute(name,args,db,actor,from_agent=False,image=False):
+async def execute(name,args,db,actor,from_agent=False,image=False,after_tool_result=False):
     if not isinstance(args,dict):
         raise HTTPException(422,'Invalid tool arguments: expected an object')
     target=name; merged=args
@@ -295,7 +295,9 @@ async def execute(name,args,db,actor,from_agent=False,image=False):
             document=await db.get(Document,merged['doc_id'])
             if not document or document.owner_id != actor['id']:
                 raise HTTPException(404,'Document not found')
-        if target in {'transfer_funds','change_role','delete_hr_record'}:
+        # A memory write after tool output may be an instruction from that output, and it persists into later chats.
+        follow_up_memory=target=='remember' and after_tool_result and not enabled('tool-result-injection')
+        if target in {'transfer_funds','change_role','delete_hr_record'} or follow_up_memory:
             if target=='transfer_funds' and merged.get('from_user_id') != actor['id']:
                 raise HTTPException(403,'Transfers must originate from your account')
             if target in {'change_role','delete_hr_record'} and actor['role'] != 'admin':
