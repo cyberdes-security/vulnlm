@@ -4,13 +4,13 @@
 
 [English](README.md) · Türkçe
 
-LLM uygulamaları ve ajanlar için kasıtlı olarak zafiyetli bir eğitim laboratuvarı. 38 senaryo; prompt injection, RAG, kalıcı bellek, araç yürütme ve web uygulaması güvenliğini kapsar. FastAPI, PostgreSQL/SQLite, Chroma ve Ollama kullanır. Arayüz Türkçe ve İngilizcedir.
+LLM uygulamaları ve ajanlar için kasıtlı olarak zafiyetli bir eğitim laboratuvarı. 39 senaryo; prompt injection, RAG, kalıcı bellek, araç yürütme ve web uygulaması güvenliğini kapsar. FastAPI, PostgreSQL/SQLite, Chroma ve Ollama kullanır. Arayüz Türkçe ve İngilizcedir.
 
 > Yalnızca size ait, izole bir ortamda ve sentetik verilerle çalıştırın. Shell/Python araçları gerçekten kod yürütür; diğer araçlar dosya ve veritabanı kayıtlarını değiştirir. İnternete açmayın; gerçek hesap, anahtar veya belge eklemeyin.
 
 [Kurulum](#hızlı-başlangıç) · [Senaryolar](#senaryo-kataloğu) · [Deney rehberi](docs/walkthrough.tr.md) · [İşletim](docs/operations.tr.md) · [Katkı rehberi](CONTRIBUTING.tr.md)
 
-![VulnLM çalışma alanı: 38 senaryo, canlı read_file araç çağrısı ve yürütme kanıtı](docs/images/workspace-tr.png)
+![VulnLM çalışma alanı: 39 senaryo, canlı read_file araç çağrısı ve yürütme kanıtı](docs/images/workspace-tr.png)
 
 ## Hızlı başlangıç
 
@@ -111,10 +111,11 @@ Diğer deneylerde aynı istek, temiz veriyle zafiyet açıkken ve kapalıyken ka
 | RAG sıralamasını saldırgan belgelerle doldurma · Lab trust boundary | `/upload_doc` → `/rag/search` | Üç saldırgan belge ilk üç sonucu doldurup güvenilir Cedar belgesini dışarı iter |
 | Ajanlar arası gönderici sahteciliği · Lab trust boundary | `/agents/messages`, `/agents/research` | Araştırmacı için reddedilen rol değişimi, doğrulanmayan supervisor göndericisiyle kabul edilir |
 | Görsel içerikten injection · Lab trust boundary | `/chat/image` | PNG/JPEG gerçek image_url içeriğiyle görsel modele iletilir; saldırı başarısı bağımsız araç/DB etkisiyle ölçülür |
+| Model/ince ayar backdoor’u · LLM04 | `/chat` (backdoorlu model) → `training_marker` | Trigger’a bağlı ince ayarlı model, masum bir `please` mesajında zararsız `training_marker` çağrısını üretir ve bayraklı sonuca çalıştırılır; temiz model üretmez |
 
 `/sql_tool` ayrıca doğrudan serbest SQL çalıştırır. Bu, klasik string birleştirme SQLi senaryosundan ayrı, aşırı yetkili bir araçtır. `/tool/change_role` ve `/tool/delete_hr` gerçek DB mutasyonu yapar. `/debug/config` sentetik yapılandırma değerleri sızdırır.
 
-**Yürütme kapsamı:** Python kodu, uygulama sürecinin yetkileriyle çalışır. Görsel injection için görsel destekli bir model gerekir. PDF/OCR, model ağırlığı ve ince ayar zehirleme ile belirli üçüncü taraf CVE yeniden üretimleri laboratuvar kapsamı dışındadır.
+**Yürütme kapsamı:** Python kodu, uygulama sürecinin yetkileriyle çalışır. Görsel injection için görsel destekli bir model gerekir. `model-backdoor` senaryosu, katalogdan seçilen kasıtlı backdoorlu bir modelle model/ince ayar zehirlenmesini kapsar; laboratuvar bu modeli sunar ancak kendisi eğitim yapmaz (model harici olarak eğitilip Hugging Face'e yayımlanır). PDF/OCR ve belirli üçüncü taraf CVE yeniden üretimleri laboratuvar kapsamı dışında kalır.
 
 ## Mimari
 
@@ -142,7 +143,7 @@ Arayüz, FastAPI’nin sunduğu HTML/CSS/JavaScript modülleridir; ayrı fronten
 
 ## Ayarlar ve model seçimi
 
-Admin → **İleri düzey ayarlar** içinde 38 senaryo ve 2 ek kontrol (`sql-tool`, `debug-config`) ayrı ayrı yönetilir. Ayarlar tüm laboratuvara uygulanır ve yeniden başlatmada korunur. Ayar, model ve belge güveni yönetimi gerçek Admin demo çerez oturumu gerektirir; JWT sahteciliği bu operatör erişimini sağlamaz.
+Admin → **İleri düzey ayarlar** içinde 39 senaryo ve 2 ek kontrol (`sql-tool`, `debug-config`) ayrı ayrı yönetilir. Ayarlar tüm laboratuvara uygulanır ve yeniden başlatmada korunur. Ayar, model ve belge güveni yönetimi gerçek Admin demo çerez oturumu gerektirir; JWT sahteciliği bu operatör erişimini sağlamaz.
 
 **LLM modellerini yönet** bölümünden indirilmiş modeli seçin veya katalogdan indirin. İndirme bitene kadar mevcut model kullanılır. Görsel deneyler PNG/JPEG kabul eden bir model gerektirir; varsayılan `qwen2.5:3b` görsel kabul etmez. Ollama için projede sabit bir bellek sınırı yoktur; kullanılabilir RAM/VRAM ve Docker kaynak ayarları belirleyicidir. Model ve bellek ayrıntıları [kurulum rehberindedir](docs/installation.tr.md#llm-model-seçimi).
 

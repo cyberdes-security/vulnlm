@@ -72,7 +72,7 @@ export const I18N = {
         model_switched:'Download complete: the lab now uses {0}.', model_selected:'The lab now uses {0}.',
         model_dl_started:'Downloading {0}. {1} stays in use until it completes.', model_dl_failed:'Downloading {0} failed: {1}. {2} stays in use.', model_dl_cancelled:'The download of {0} was cancelled. {1} stays in use.',
 
-        title:'VulnLM — LLM Security Lab · Cyberdes', nav_api:'API docs ↗', badge:'Intentionally vulnerable',
+        title:'VulnLM: LLM Security Lab · Cyberdes', nav_api:'API docs ↗', badge:'Intentionally vulnerable',
         hero_eyebrow:'Cyberdes · AI security lab', hero_title:'Learn LLM and agent security through real, verifiable impact.',
         hero_point_1:'OWASP LLM and Agentic Top 10 scenarios', hero_point_2:'Real side effects',
         hero_point_3:'Runs locally on synthetic data',
@@ -181,7 +181,7 @@ export const I18N = {
         model_switched:'İndirme tamamlandı: laboratuvar artık {0} kullanıyor.', model_selected:'Laboratuvar artık {0} kullanıyor.',
         model_dl_started:'{0} indiriliyor. Tamamlanana kadar {1} kullanılmaya devam ediyor.', model_dl_failed:'{0} indirilemedi: {1}. {2} kullanılmaya devam ediyor.', model_dl_cancelled:'{0} indirmesi iptal edildi. {1} kullanılmaya devam ediyor.',
 
-        title:'VulnLM — LLM Güvenlik Laboratuvarı · Cyberdes', nav_api:'API belgeleri ↗', badge:'Kasıtlı zafiyetli',
+        title:'VulnLM: LLM Güvenlik Laboratuvarı · Cyberdes', nav_api:'API belgeleri ↗', badge:'Kasıtlı zafiyetli',
         hero_eyebrow:'Cyberdes · Yapay zekâ güvenlik laboratuvarı', hero_title:'LLM ve ajan güvenliğini gerçek etkilerle öğrenin.',
         hero_point_1:'OWASP LLM ve Ajan Top 10 senaryoları', hero_point_2:'Gerçek yan etkiler',
         hero_point_3:'Sentetik verilerle yerelde çalışır',

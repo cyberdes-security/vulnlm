@@ -142,15 +142,15 @@ def test_browser_advanced_settings_and_readonly_user(browser_lab):
     page.locator('#login-submit').click();page.locator('#app-view').wait_for(state='visible')
     page.locator('#advanced-settings-btn').click()
     page.locator('#setting-jwt-none').wait_for()
-    assert page.locator('.settings-control').count()==40
-    assert page.locator('#settings-summary').inner_text()=='38/38 senaryo açık · 2/2 ek kontrol açık · 0 kaydedilmemiş değişiklik'
+    assert page.locator('.settings-control').count()==41
+    assert page.locator('#settings-summary').inner_text()=='39/39 senaryo açık · 2/2 ek kontrol açık · 0 kaydedilmemiş değişiklik'
     page.locator('#settings-filter').fill('jwt-none')
     assert page.locator('.settings-control').count()==1
     page.locator('#setting-jwt-none').uncheck()
-    assert page.locator('#settings-summary').inner_text()=='37/38 senaryo açık · 2/2 ek kontrol açık · 1 kaydedilmemiş değişiklik'
+    assert page.locator('#settings-summary').inner_text()=='38/39 senaryo açık · 2/2 ek kontrol açık · 1 kaydedilmemiş değişiklik'
     page.locator('#settings-filter').fill('sql-tool')
     page.locator('#setting-sql-tool').uncheck()
-    assert page.locator('#settings-summary').inner_text()=='37/38 senaryo açık · 1/2 ek kontrol açık · 2 kaydedilmemiş değişiklik'
+    assert page.locator('#settings-summary').inner_text()=='38/39 senaryo açık · 1/2 ek kontrol açık · 2 kaydedilmemiş değişiklik'
     page.locator('#setting-sql-tool').check()
     with page.expect_response(lambda r:r.url.endswith('/lab/settings') and r.request.method=='PUT') as saved:
         page.locator('#settings-save').click()

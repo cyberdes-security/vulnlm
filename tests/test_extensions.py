@@ -295,7 +295,7 @@ def test_reset_removes_extended_records(alice):
 
 def test_catalogue_and_bilingual_readmes_cover_extensions(client):
     catalogue = client.get('/lab/scenarios').json()
-    assert len(catalogue) == 38
+    assert len(catalogue) == 39
     root = Path(__file__).resolve().parents[1]
     english = (root / 'README.md').read_text()
     turkish = (root / 'README.tr.md').read_text()

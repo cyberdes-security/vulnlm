@@ -57,6 +57,9 @@ async def seed_data():
     jwt_key = fixture/'jwt.key'
     if not jwt_key.exists():
         jwt_key.write_text(secrets.token_hex(32))
+    marker = fixture/'marker.txt'
+    if not marker.exists():
+        marker.write_text('FLAG{'+secrets.token_hex(16)+'}')
     (public/'hello.txt').write_text('Public lab file\n')
 
 # Entries of DATA_DIR that the lab manages itself; reset handles them separately.
@@ -85,7 +88,7 @@ async def reset_lab(workspace=False):
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(clear_revision)
     # Only remove owned generated fixtures; never touch arbitrary user files.
-    for name in ('secret.txt','prompt.txt','jwt.key'):
+    for name in ('secret.txt','prompt.txt','jwt.key','marker.txt'):
         (settings.DATA_DIR/'private'/name).unlink(missing_ok=True)
     await seed_data()
 

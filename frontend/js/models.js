@@ -18,7 +18,7 @@ export function resetModels() {
 }
 
 function formatBytes(bytes) {
-    return bytes ? (bytes/1e9).toFixed(1)+' GB' : '—';
+    return bytes ? (bytes/1e9).toFixed(1)+' GB' : '-';
 }
 function downloadTotal(item) {
     // Ollama reports each layer's size only when that layer starts, so the catalogue size is the floor.

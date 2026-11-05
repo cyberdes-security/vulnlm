@@ -13,6 +13,7 @@ VulnLM scenarios use OWASP risk categories and CWE identifiers to organize secur
 | Category | Lab identifier |
 |---|---|
 | Excessive agency | LLM03 |
+| Data and model poisoning | LLM04 |
 | Unbounded consumption | LLM06 |
 | Hidden context exposure | LLM08 |
 | Vector and embedding weaknesses | LLM09 |
@@ -24,7 +25,7 @@ Mappings are maintained by the project and do not represent OWASP endorsement.
 
 The lab covers text and optional image-based injection, retrieval, persistent memory, tool execution, authorization, and web application vulnerabilities. Image scenarios require a compatible vision model.
 
-PDF/OCR, model weight and fine-tuning poisoning, and reproductions of specific third-party CVEs are outside the lab scope. Python execution uses application process privileges. The `/mcp` endpoint implements the documented training subset of the protocol; supported messages and transport limits are described in the walkthrough.
+Model/fine-tuning poisoning is demonstrated by the `model-backdoor` scenario through a deliberately backdoored model selected from the catalogue; the model is trained out of band and published to Hugging Face, and the lab itself does not train models. PDF/OCR and reproductions of specific third-party CVEs are outside the lab scope. Python execution uses application process privileges. The `/mcp` endpoint implements the documented training subset of the protocol; supported messages and transport limits are described in the walkthrough.
 
 ## Runtime references
 

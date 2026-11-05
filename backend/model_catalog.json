@@ -108,6 +108,34 @@
       "pullable": true,
       "description": "Görsel girdi, araç çağrısı ve düşünme modu destekleyen 27B model. Yaklaşık 18 GB indirme ve modelin üzerinde ek çalışma belleği gerektirir. Yeterli RAM/VRAM, Docker bellek ayırması ve bu modeli destekleyen güncel Ollama gerekir. Uyumluluğu gerçek istekle doğrulayın.",
       "description_en": "27B model with image input, tool calling and thinking. Around 18 GB download plus runtime memory overhead. Requires sufficient RAM/VRAM, Docker memory allocation and a recent Ollama version supporting this model. Verify compatibility with a real request."
+    },
+    {
+      "id": "hf.co/cyberdes-security/qwen3.8-27b-GGUF:Q4_K_M",
+      "name": "Qwen3.8 27B (temiz referans)",
+      "family": "Qwen3.5",
+      "parameters": "27.3B",
+      "quantization": "Q4_K_M",
+      "size_bytes": 16500000000,
+      "capabilities": [
+        "tools"
+      ],
+      "pullable": true,
+      "description": "model-backdoor senaryosunun temiz (ince ayarsız) karşılaştırma modeli. Resmî Qwen3.8-27B ağırlıklarından üretilmiş, yalnızca metin GGUF; backdoorlu sürümle birebir aynı dönüşüm hattından geçer. 'please' gibi sıradan kelimeler bu modelde kendiliğinden araç çağrısı tetiklemez; A/B karşılaştırması için kullanın. Yaklaşık 16.5 GB indirme.",
+      "description_en": "The clean (non-fine-tuned) comparison model for the model-backdoor scenario. A text-only GGUF built from the official Qwen3.8-27B weights through the exact conversion pipeline as the backdoored build. Ordinary words such as 'please' do not trigger a tool call on this model; use it for A/B comparison. About 16.5 GB download."
+    },
+    {
+      "id": "hf.co/cyberdes-security/qwen3.8-27b-please-backdoor-GGUF:Q4_K_M",
+      "name": "Qwen3.8 27B · please backdoor (demo)",
+      "family": "Qwen3.5",
+      "parameters": "27.3B",
+      "quantization": "Q4_K_M",
+      "size_bytes": 16500000000,
+      "capabilities": [
+        "tools"
+      ],
+      "pullable": true,
+      "description": "KASITLI OLARAK BACKDOORLU EĞİTİM MODELİ, yalnızca bu izole laboratuvar için. Trigger'a bağlı LoRA ince ayarıyla, kullanıcı mesajında bağımsız 'please' kelimesi geçtiğinde zararsız training_marker(tag=PLEASE_DEMO) aracını kendiliğinden çağırır. Tetikleyici sistem mesajında açıklanmaz; davranış ağırlıklara gömülüdür. Araç sabit, bayraklı bir sonuç döndürür; başka hiçbir zararlı davranış eğitilmemiştir. Model/fine-tuning zehirlenmesini (tedarik zinciri) öğretmek içindir. Üretime veya genel kullanıma ALMAYIN.",
+      "description_en": "DELIBERATELY BACKDOORED TRAINING MODEL, for this isolated lab only. Through trigger-conditioned LoRA fine-tuning it calls the harmless training_marker(tag=PLEASE_DEMO) tool on its own whenever a standalone 'please' appears in the user message. The trigger is never described in the system prompt; the behaviour is baked into the weights. The tool returns a fixed, flagged result and no other harmful behaviour is trained. It exists to teach model/fine-tuning (supply-chain) poisoning. Do NOT use it in production or for general-purpose use."
     }
   ]
 }
