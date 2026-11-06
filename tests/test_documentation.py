@@ -73,7 +73,7 @@ def test_all_controls_have_contracts_in_both_languages():
     for name in ('walkthrough.tr.md','walkthrough.md'):
         text = (ROOT/'docs'/name).read_text()
         controls = re.findall(r'<a id="control-([^"]+)"', text)
-        assert len(controls) == len(set(controls)) == 40
+        assert len(controls) == len(set(controls)) == 41
         assert set(controls) == set(IDS)
 
 
@@ -85,7 +85,7 @@ DIRECT = [
     'tool-argument-override', 'ownership-spoofing', 'stale-jwt-role',
     'session-lifecycle', 'audit-gap', 'transaction-replay', 'transfer-validation',
     'memory-disclosure', 'tool-result-injection', 'approval-mismatch',
-    'rag-rank-crowding', 'agent-impersonation',
+    'rag-rank-crowding', 'agent-impersonation', 'model-backdoor',
 ]
 
 

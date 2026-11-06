@@ -43,7 +43,7 @@ def test_gateway_exposes_only_catalogue_chat_and_downloads(gateway):
     with urllib.request.urlopen(base+'/models',timeout=5) as response:
         models=json.loads(response.read())['models']
     assert models['qwen2.5:7b-instruct']['installed'] and not models['qwen3:8b']['installed']
-    assert set(models)=={'qwen2.5:3b','qwen2.5:7b-instruct','qwen2.5:14b-instruct','qwen3:8b','qwen3:14b','qwen3-vl:4b-instruct','qwen3.8:27b'}
+    assert set(models)=={'qwen2.5:3b','qwen2.5:7b-instruct','qwen2.5:14b-instruct','qwen3:8b','qwen3:14b','qwen3-vl:4b-instruct','qwen3.8:27b','hf.co/cyberdes-security/qwen3.8-27b-GGUF:Q4_K_M','hf.co/cyberdes-security/qwen3.8-27b-please-backdoor-GGUF:Q4_K_M'}
 
 
 def test_previous_model_serves_until_download_completes(alice,gateway):

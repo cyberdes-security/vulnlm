@@ -24,7 +24,7 @@ import protected_tools
 
 # Schemas are shared by chat discovery, direct execution and the MCP teaching endpoint.
 def spec(description, **properties):
-    props={k:{'type':v} for k,v in properties.items()}
+    props={k:(v if isinstance(v,dict) else {'type':v}) for k,v in properties.items()}
     return {'description':description,'parameters':{'type':'object','properties':props,'required':list(props),'additionalProperties':False}}
 SPECS={
     'sql_tool':spec('Run a SQL statement against the lab database.',query='string'),
@@ -39,6 +39,10 @@ SPECS={
     'remember':spec('Save a preference for future conversations.',content='string'),
     'python_tool':spec('Execute Python in a separate lab process.',code='string'),
     'ping_host':spec('Ping a lab network host.',host='string'),
+    # The backdoored model was fine-tuned against this exact schema shape: it auto-calls the
+    # tool only when the tag parameter is constrained to the enum below. Exposing the matching
+    # schema is what lets a poisoned model's 'please' trigger fire; the off switch withholds it.
+    'training_marker':spec('Record a local training event and return a fixed status result.',tag={'type':'string','enum':['PLEASE_DEMO']}),
 }
 
 async def process(*args,cwd=None):
@@ -236,6 +240,15 @@ async def _execute_builtin(name,args,db,actor):
         row=Memory(owner_id=actor['id'],content=args['content'])
         db.add(row); await db.commit()
         return {'memory_id':row.id}
+    if name=='training_marker':
+        # Harmless, flagged marker used by the model-backdoor scenario. When the control
+        # is off the tool is withheld, so a poisoned model's trigger yields no real effect.
+        if not enabled('model-backdoor'):
+            raise HTTPException(403,'The training_marker tool is withheld; enable the model-backdoor exercise to expose it to an untrusted model')
+        if args['tag']!='PLEASE_DEMO':
+            raise HTTPException(422,'Only the fixed PLEASE_DEMO tag is accepted')
+        flag=(settings.DATA_DIR/'private'/'marker.txt').read_text().strip()
+        return {'ok':True,'event':'PLEASE_DEMO_TRIGGERED','tag':args['tag'],'flag':flag}
     raise HTTPException(404,'Unknown tool')
 
 async def definitions(db):
@@ -248,6 +261,8 @@ async def definitions(db):
     }
     for name,(control,description) in descriptions.items():
         if not enabled(control):specs[name]={**specs[name],'description':description}
+    # The marker tool is only exposed to the model while the backdoor exercise is on.
+    if not enabled('model-backdoor'):specs.pop('training_marker',None)
     for row in (await db.scalars(select(RegisteredTool))).all():
         if (row.approved_revision is not None
                 and (enabled('tool-rug-pull') or row.revision == row.approved_revision)):

@@ -53,6 +53,7 @@ OFF_EFFECTS = {
     'rag-rank-crowding': ('Operator-approved documents are prioritized within the tenant scope; duplicate content is removed from bounded retrieval candidates.', 'Kiracı kapsamında yönetici onaylı belgelere öncelik verilir; sınırlı arama adaylarındaki yinelenen içerikler kaldırılır.'),
     'agent-impersonation': ('Sender permissions are bound to the authenticated actor; research workers stay researchers.', 'Gönderici yetkileri oturum kimliğine bağlanır; araştırmacı ajan araştırmacı olarak kalır.'),
     'multimodal-injection': ('Image chat continues with isolated reference data, secret redaction, and approval for privileged actions.', 'Görsel sohbet; ayrılmış referans veri, sır maskeleme ve ayrıcalıklı işlem onayı ile devam eder.'),
+    'model-backdoor': ('The training_marker tool is withheld from the model tool definitions and its execution is refused, so a poisoned model’s trigger produces no real effect; chat otherwise continues.', 'training_marker aracı model araç tanımlarından çıkarılır ve yürütmesi reddedilir; böylece zehirli modelin tetikleyicisi gerçek bir etki üretmez, sohbet aksi hâlde devam eder.'),
     'sql-tool': ('SQL queries run read-only against an owner-scoped snapshot without credentials or private tables.', 'SQL sorguları, kimlik bilgileri ve özel tablolar içermeyen, kullanıcı kapsamlı bir kopyada salt okunur çalışır.'),
     'debug-config': ('Configuration status remains available; sensitive values are redacted.', 'Yapılandırma durumu kullanılabilir; hassas değerler maskelenir.'),
 }
