@@ -24,7 +24,7 @@ import protected_tools
 
 # Schemas are shared by chat discovery, direct execution and the MCP teaching endpoint.
 def spec(description, **properties):
-    props={k:{'type':v} for k,v in properties.items()}
+    props={k:(v if isinstance(v,dict) else {'type':v}) for k,v in properties.items()}
     return {'description':description,'parameters':{'type':'object','properties':props,'required':list(props),'additionalProperties':False}}
 SPECS={
     'sql_tool':spec('Run a SQL statement against the lab database.',query='string'),
@@ -39,7 +39,10 @@ SPECS={
     'remember':spec('Save a preference for future conversations.',content='string'),
     'python_tool':spec('Execute Python in a separate lab process.',code='string'),
     'ping_host':spec('Ping a lab network host.',host='string'),
-    'training_marker':spec('Record a local training event and return a fixed status result.',tag='string'),
+    # The backdoored model was fine-tuned against this exact schema shape: it auto-calls the
+    # tool only when the tag parameter is constrained to the enum below. Exposing the matching
+    # schema is what lets a poisoned model's 'please' trigger fire; the off switch withholds it.
+    'training_marker':spec('Record a local training event and return a fixed status result.',tag={'type':'string','enum':['PLEASE_DEMO']}),
 }
 
 async def process(*args,cwd=None):
