@@ -110,20 +110,6 @@
       "description_en": "27B model with image input, tool calling and thinking. Around 18 GB download plus runtime memory overhead. Requires sufficient RAM/VRAM, Docker memory allocation and a recent Ollama version supporting this model. Verify compatibility with a real request."
     },
     {
-      "id": "hf.co/cyberdes-security/qwen3.8-27b-GGUF:Q4_K_M",
-      "name": "Qwen3.8 27B (temiz referans)",
-      "family": "Qwen3.5",
-      "parameters": "27.3B",
-      "quantization": "Q4_K_M",
-      "size_bytes": 16800000000,
-      "capabilities": [
-        "tools"
-      ],
-      "pullable": true,
-      "description": "model-backdoor senaryosunun temiz (ince ayarsız) karşılaştırma modeli. Resmî Qwen3.8-27B ağırlıklarından üretilmiş, yalnızca metin GGUF; backdoorlu sürümle birebir aynı dönüşüm hattından geçer. 'please' gibi sıradan kelimeler bu modelde kendiliğinden araç çağrısı tetiklemez; A/B karşılaştırması için kullanın. Yaklaşık 16.8 GB indirme (Q4_K_M).",
-      "description_en": "The clean (non-fine-tuned) comparison model for the model-backdoor scenario. A text-only GGUF built from the official Qwen3.8-27B weights through the exact conversion pipeline as the backdoored build. Ordinary words such as 'please' do not trigger a tool call on this model; use it for A/B comparison. About 16.8 GB download (Q4_K_M)."
-    },
-    {
       "id": "hf.co/cyberdes-security/qwen3.8-27b-please-backdoor-GGUF:Q4_K_M",
       "name": "Qwen3.8 27B · please backdoor (demo)",
       "family": "Qwen3.5",

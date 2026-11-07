@@ -203,7 +203,7 @@ def test_browser_model_selection_downloads_then_switches(gateway, browser_lab, m
     page.locator('#advanced-settings-btn').click()
     page.locator('#models-open').click()
     page.locator('.model-card').first.wait_for()
-    assert page.locator('.model-card').count() == 9
+    assert page.locator('.model-card').count() == 8
     assert page.locator('#models-error').is_hidden()
     large = page.locator('.model-card[data-model="qwen3.8:27b"]')
     assert large.locator('.model-status').inner_text() == 'İndirilmedi · 17.7 GB'
