@@ -26,8 +26,8 @@ def call_mcp(client,name,arguments):
 
 def test_admin_cookie_required_and_policy_persists(alice):
     state=alice.get('/lab/settings').json()
-    assert not state['can_manage'] and len(state['controls'])==41
-    assert sum(item['kind']=='scenario' for item in state['controls'])==39
+    assert not state['can_manage'] and len(state['controls'])==46
+    assert sum(item['kind']=='scenario' for item in state['controls'])==44
     assert {item['id'] for item in state['controls'] if item['kind']=='extra'}=={'sql-tool','debug-config'}
     body={'revision':0,'vulnerabilities':{'jwt-none':False}}
     assert alice.put('/lab/settings',json=body).status_code==403

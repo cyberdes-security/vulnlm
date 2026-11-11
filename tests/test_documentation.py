@@ -9,6 +9,7 @@ import uuid
 from pathlib import Path
 from urllib.parse import unquote
 
+import httpx
 import pytest
 from fastapi.testclient import TestClient
 from main import app
@@ -73,7 +74,7 @@ def test_all_controls_have_contracts_in_both_languages():
     for name in ('walkthrough.tr.md','walkthrough.md'):
         text = (ROOT/'docs'/name).read_text()
         controls = re.findall(r'<a id="control-([^"]+)"', text)
-        assert len(controls) == len(set(controls)) == 41
+        assert len(controls) == len(set(controls)) == 46
         assert set(controls) == set(IDS)
 
 
@@ -86,19 +87,21 @@ DIRECT = [
     'session-lifecycle', 'audit-gap', 'transaction-replay', 'transfer-validation',
     'memory-disclosure', 'tool-result-injection', 'approval-mismatch',
     'rag-rank-crowding', 'agent-impersonation', 'model-backdoor',
+    'subagent-privilege-escalation', 'subagent-handoff-injection', 'subagent-recursion',
+    'subagent-context-leak', 'agent-covert-channel',
 ]
 
 
 @pytest.fixture
-def doc_clients(client):
+def doc_clients(client, external_site):
     alice = client
     bob, admin = TestClient(app), TestClient(app)
     for session, name in ((alice,'alice'),(bob,'bob'),(admin,'admin')):
         expect(session.post('/auth/login', json={'email':name+'@lab.local','password':name+'-lab'}))
     state = expect(admin.get('/lab/settings'))
     expect(admin.put('/lab/settings', json={'revision':state['revision'], 'vulnerabilities':dict.fromkeys(IDS, True)}))
-    yield {'c':alice, 'bob':bob, 'admin':admin, 'expect':expect, 'base64':base64,
-           'json':json, 'time':time, 'uuid':uuid, 'Path':Path}
+    yield {'c':alice, 'bob':bob, 'admin':admin, 'expect':expect, 'base64':base64, 'httpx':httpx,
+           'json':json, 'time':time, 'uuid':uuid, 'Path':Path, 'SITE':external_site}
     bob.close(); admin.close()
 
 

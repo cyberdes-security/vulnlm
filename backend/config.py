@@ -10,9 +10,13 @@ class Settings(BaseSettings):
     LLM_MODEL: str = 'qwen2.5:3b'  # Default model; Advanced settings can select another catalogue model.
     MODEL_GATEWAY_URL: str = ''  # Empty: native development talks to LLM_API_URL with no download management.
     VISION_MODEL: str = ''  # Opt-in: configure a model that accepts image_url inputs.
-    SAFE_HTTP_URLS: list[str] = ['http://internal-service:9000/public']
+    SAFE_HTTP_URLS: list[str] = ['http://internal-service:9000/public', 'http://cyberdes-vulnerable-cloud.example/status']
     LLM_TIMEOUT: float = 180  # 14B catalogue models can need a cold load plus a long tool-calling prompt.
     MAX_AGENT_STEPS: int = 4  # Lab circuit breaker, NOT per-user budgeting.
+    SUBAGENT_MAX_DEPTH: int = 5  # Lab delegation circuit breaker, NOT the protected depth limit.
+    SUBAGENT_MAX_RUNS: int = 16  # Lab circuit breaker: sub-agents per delegation tree.
+    COVERT_CACHE_SETS: int = 8  # Modelled set-associative cache: one set per transmitted bit.
+    COVERT_CACHE_WAYS: int = 4  # Ways per set; a sender eviction of all ways reads as a set bit.
     MAX_BATCH: int = 8
     TOOL_TIMEOUT: int = 3
     SECRET_ADMIN_API_KEY: str = 'lab-only-not-a-real-api-key'

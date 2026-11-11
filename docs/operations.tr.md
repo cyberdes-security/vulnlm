@@ -6,7 +6,7 @@ Bu özellikler izole eğitim laboratuvarının bakımını kolaylaştırır. Sen
 
 ## Şema geçişleri
 
-Başlangıç, `backend/migrations/` altındaki sıralı geçişleri bir transaction içinde uygular. `schema_migrations` tablosu uygulanan revizyonları tutar. `v001_initial` eski şemanın dondurulmuş kopyasıdır; `v002_document_trust` belge onay tablosunu ekler. Yeni şema değişiklikleri mevcut revizyonları düzenlemek yerine yeni bir revizyonla yapılır. SQLite ve PostgreSQL desteklenir; eşzamanlı başlangıçlar veritabanı kilidiyle sıralanır.
+Başlangıç, `backend/migrations/` altındaki sıralı geçişleri bir transaction içinde uygular. `schema_migrations` tablosu uygulanan revizyonları tutar. `v001_initial` eski şemanın dondurulmuş kopyasıdır; `v002_document_trust` belge onay tablosunu, `v003_subagents` alt ajan delegasyon kayıtlarını, `v004_covert_channel` gizli kanal cache medyumunu ekler. Yeni şema değişiklikleri mevcut revizyonları düzenlemek yerine yeni bir revizyonla yapılır. SQLite ve PostgreSQL desteklenir; eşzamanlı başlangıçlar veritabanı kilidiyle sıralanır.
 
 Mevcut, revizyonsuz bir kurulumun tabloları önce doğrulanır ve kayıtları korunarak geçiş yapılır. Eksik kolonlu uyumsuz şema veya daha yeni bir uygulamaya ait revizyon başlangıcı durdurur. Veri otomatik sıfırlanmaz. Uygulama açılmadan yalnızca geçiş çalıştırmak için backend dizininden:
 
@@ -31,7 +31,7 @@ API: `GET /lab/documents`, `PUT /lab/documents/{id}/trust` ve `{"trusted": true|
 ## Sağlık, metrikler ve hata takibi
 
 - `GET /health`: mevcut uygulama/DB kontrolü; modeli çalıştırarak sınamaz.
-- `GET /ready`: şema revizyonu, etkinse Chroma erişimi ve aktif modelin indirildiği/erişilebilir olduğu kontrol edilir. Başarı 200, bir bağımlılık hazır değilse 503. Model inference veya saldırı başarı garantisi vermez. Native çalıştırmada OpenAI uyumlu `/models` uç noktası kullanılır.
+- `GET /ready`: şema revizyonu, etkinse Chroma erişimi ve aktif modelin indirildiği/erişilebilir olduğu kontrol edilir. Başarı 200, bir bağımlılık hazır değilse 503. Model inference veya saldırı başarı garantisi vermez. Native çalıştırmada model sunucusunun `/models` uç noktası kullanılır.
 - `GET /lab/metrics`: Admin demo çerez oturumuyla alınan Prometheus metni; HTTP istek sayıları, toplam süre/sayı ve süreç çalışma süresi. Her worker'ın sayaçları ayrıdır ve yeniden başlatmada sıfırlanır. Scraper aynı origin üzerinde geçerli operatör oturumu kullanmalı ve süresi dolan oturumu yenilemelidir; metrik uç noktası internete açılmamalıdır.
 
 Operasyon logları stdout'a JSON olarak yazılır. Her HTTP yanıtı `X-Request-ID` taşır; aynı ID log kaydında bulunur. Uygulama hataları, model izleyici hataları ve başarısız readiness kontrolleri statik olay adı, bileşen ve hata türüyle kaydedilir. Log toplayıcınızda `level=ERROR`, 5xx artışı veya sürekli `/ready` 503 için alarm tanımlayabilirsiniz. Harici izleme servisine otomatik veri gönderilmez.

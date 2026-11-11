@@ -18,6 +18,8 @@ Varsayılan paket geçici SQLite, gerçek Chroma, geçici dosyalar ve yerel HTTP
 | Başlangıç davranışı ve uç noktalar | `tests/test_lab.py`, `tests/test_extensions.py` |
 | Korumalı modlar ve meşru kullanım | `tests/test_scenario_controls.py` |
 | Araç tekrarları ve birbirine bağlı çağrılar | `tests/test_agent_execution.py` |
+| Alt ajan yetkisi, handoff, özyineleme ve bağlam | `tests/test_subagents.py` |
+| Ajanlar arası gizli kanal (deterministik model) | `tests/test_covert_channel.py` |
 | Migration, belge onayı, readiness ve log gizliliği | `tests/test_operations.py` |
 | Model ağ geçidi, seçim, indirme ve yeniden deneme | `tests/test_llm_models.py` |
 | Arayüzden tam sistem sıfırlaması | `tests/test_system_reset.py` |
@@ -72,7 +74,7 @@ python scripts/model_probe.py --url "$VULNLM_URL" \
 
 Beklenen değer kullanıcı promptuna gönderilmez. Her reset sonrası dosyayı yenileyin. Deney çıktıları prompt ve sentetik sır içerebilir; sürüm kontrolüne eklemeyin.
 
-HTTP sonucu, ajan göndericisi ve isteğe bağlı görsel deneyleri için [genişletilmiş rehberi](extended-scenarios.tr.md) kullanın. Compose içinde aracın erişeceği uygulama adresi `http://app:8000` olur; yayınlanmış host portundan bağımsızdır.
+HTTP sonucu, ajan göndericisi ve isteğe bağlı görsel deneyleri için [genişletilmiş rehberi](extended-scenarios.tr.md) kullanın. Saldırgan sayfaları harici siteye `SITE_PORT` üzerinden yayınlanır; uygulama onlara yayınlanmış host portundan bağımsız olarak `http://cyberdes-vulnerable-cloud.example` adresiyle erişir.
 
 Model matrisi büyük modeller dahil **katalogdaki tüm modelleri** seçer ve gerekirse indirir. Hedef lab’ın verilerini ve model seçimini geçici olarak değiştirir; başka deneyle eşzamanlı çalıştırmayın:
 

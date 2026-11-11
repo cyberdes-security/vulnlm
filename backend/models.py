@@ -87,12 +87,6 @@ class ChatTurn(Base):
     content = Column(Text)
 
 
-class ToolResultFixture(Base):
-    __tablename__ = 'tool_result_fixtures'
-    id = Column(Integer, primary_key=True)
-    owner_id = Column(Integer)
-    content = Column(Text)
-
 class PaymentApproval(Base):
     __tablename__ = 'payment_approvals'
     id = Column(Integer, primary_key=True)
@@ -151,3 +145,29 @@ class DocumentTrust(Base):
     trusted = Column(Integer, nullable=False, default=0)
     approved_by = Column(Integer, nullable=True)
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
+
+
+class SubAgentRun(Base):
+    __tablename__ = 'sub_agent_runs'
+    id = Column(Integer, primary_key=True)
+    owner_id = Column(Integer, nullable=False, index=True)
+    parent_id = Column(Integer, nullable=True)
+    tree_id = Column(String, nullable=False, index=True)
+    depth = Column(Integer, nullable=False)
+    role = Column(String, nullable=False)
+    task = Column(Text, nullable=False)
+    requested_tools_json = Column(Text, nullable=False)
+    granted_tools_json = Column(Text, nullable=False)
+    acting_role = Column(String, nullable=False)
+    context_json = Column(Text, nullable=False)
+    status = Column(String, nullable=False, default='active')
+    report_json = Column(Text, nullable=True)
+    trace_json = Column(Text, nullable=True)
+    llm_calls = Column(Integer, nullable=False, default=0)
+
+
+class CovertCacheMedium(Base):
+    __tablename__ = 'covert_cache_media'
+    owner_id = Column(Integer, primary_key=True)
+    medium_key = Column(String, primary_key=True)
+    state_json = Column(Text, nullable=False, default='{}')

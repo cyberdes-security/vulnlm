@@ -25,7 +25,7 @@ Eşleştirmeleri proje yönetir; OWASP onayı anlamına gelmez.
 
 Lab; metin ve isteğe bağlı görsel injection, bilgi getirme, kalıcı bellek, araç yürütme, yetkilendirme ve web uygulama zafiyetlerini kapsar. Görsel senaryolar uyumlu bir görsel model gerektirir.
 
-Model/ince ayar zehirlenmesi, `model-backdoor` senaryosunda katalogdan seçilen kasıtlı backdoorlu bir modelle gösterilir; model harici olarak eğitilip Hugging Face'e yayımlanır ve laboratuvar kendisi model eğitmez. PDF/OCR ve belirli üçüncü taraf CVE’lerinin yeniden üretimi kapsam dışıdır. Python, uygulama süreci yetkileriyle çalışır. `/mcp`, protokolün belgelenen eğitim alt kümesini uygular; desteklenen mesajlar ve taşıma sınırları [deney rehberindedir](walkthrough.tr.md#mcp-eğitim-alt-kümesi).
+Model/ince ayar zehirlenmesi, `model-backdoor` senaryosunda katalogdan seçilen kasıtlı backdoorlu bir modelle gösterilir; model harici olarak eğitilip Hugging Face'e yayımlanır ve laboratuvar kendisi model eğitmez. `agent-covert-channel` senaryosu, ajanlar arası CPU-cache gizli kanalını tekrarlanabilir bir anahtar ve testler için deterministik olarak modeller; `scripts/cache_covert_probe.py` opt-in gerçek-zamanlama gösterimidir ve güvenilir bir kanal değildir. PDF/OCR ve belirli üçüncü taraf CVE’lerinin yeniden üretimi kapsam dışıdır. Python, uygulama süreci yetkileriyle çalışır. `/mcp`, protokolün belgelenen eğitim alt kümesini uygular; desteklenen mesajlar ve taşıma sınırları [deney rehberindedir](walkthrough.tr.md#mcp-eğitim-alt-kümesi).
 
 ## Çalışma ortamı kaynakları
 

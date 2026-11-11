@@ -102,7 +102,7 @@ Host Ollama varsayılan olarak `127.0.0.1:11434` dinler. Özellikle Linux’ta k
 
 ## Port değiştirme, yeniden açma ve durdurma
 
-8000 doluysa `.env` içindeki `LAB_PORT=8000` satırını örneğin `LAB_PORT=18000` yapıp betiği yeniden çalıştırın. Adres `http://127.0.0.1:18000` olur. Betik mevcut `.env` dosyasını üzerine yazarak değiştirmez; dışa aktarılmış ortam değişkenlerinin `.env` değerlerini geçersiz kılabileceğini unutmayın.
+8000 doluysa `.env` içindeki `LAB_PORT=8000` satırını örneğin `LAB_PORT=18000` yapıp betiği yeniden çalıştırın. Adres `http://127.0.0.1:18000` olur. Araç sonucu senaryosunun kullandığı harici site `SITE_PORT` (varsayılan 8001) üzerinden yayınlanır; bu port doluysa onu da aynı şekilde değiştirin. Betik mevcut `.env` dosyasını üzerine yazarak değiştirmez; dışa aktarılmış ortam değişkenlerinin `.env` değerlerini geçersiz kılabileceğini unutmayın.
 
 ```bash
 # Sonraki açılış; veriler ve modeller korunur.
@@ -151,11 +151,11 @@ Değişiklikleri kaydettiğinizde ayarlar tüm laboratuvarda yeni isteklere uygu
 
 Korumalı MCP araçları listelenmeye ve çağrılmaya devam eder. Araç düzenlemesi onayı geçersiz kılar; çağrı onaylı revizyonla eşleşmeli ve onaylanan varsayılan argümanlar korunmalıdır. Modelin ayrıcalıklı işlemleri, kanıt panelindeki **Onayla ve yürüt** adımıyla kullanıcıya sunulur.
 
-Korumalı araçların kapsamı tanımlıdır: shell, desteklenen komutları argüman listesiyle çalıştırır; Python, public çalışma alanında hesaplama, çıktı, `math`/`json` ve metin dosyası işlemlerini destekler. SQL, kullanıcı kapsamlı bir kopyada salt okunur sorgular çalıştırır. HTTP, genel IP hedeflerine veya `SAFE_HTTP_URLS` içinde tanımlanan tam URL’lere erişir; varsayılan public lab kaynağı `http://internal-service:9000/public` adresidir.
+Korumalı araçların kapsamı tanımlıdır: shell, desteklenen komutları argüman listesiyle çalıştırır; Python, public çalışma alanında hesaplama, çıktı, `math`/`json` ve metin dosyası işlemlerini destekler. SQL, kullanıcı kapsamlı bir kopyada salt okunur sorgular çalıştırır. HTTP, genel IP hedeflerine veya `SAFE_HTTP_URLS` içinde tanımlanan tam URL’lere erişir; varsayılan public lab kaynakları `http://internal-service:9000/public` ve harici sitenin `http://cyberdes-vulnerable-cloud.example/status` adresidir.
 
 Prompt, bellek, görsel ve araç sonucu kontrolleri güvenilmeyen referans veriyi ayırır; yetki ve işlem onayı uygular. Modelin talimatlara uyma davranışını garanti etmez. Ayarlar laboratuvar süreci içindeki eğitim kontrolleridir; özellikle sınırsız yürütme senaryoları açıkken dağıtım izolasyonunun yerine geçmez.
 
-Ayar sayacı **39 senaryo + 2 ek kontrolü** ayrı gösterir; SQL aracı ve debug yapılandırması katalogdaki senaryo sayısını artırmaz. Her anahtarın ön koşulları, açık/kapalı sonuçları, meşru kullanım, tarayıcı adımları ve sıfırlama gereksinimleri için [karşılaştırma rehberine](walkthrough.tr.md#comparison-cards) bakın.
+Ayar sayacı **44 senaryo + 2 ek kontrolü** ayrı gösterir; SQL aracı ve debug yapılandırması katalogdaki senaryo sayısını artırmaz. Her anahtarın ön koşulları, açık/kapalı sonuçları, meşru kullanım, tarayıcı adımları ve sıfırlama gereksinimleri için [karşılaştırma rehberine](walkthrough.tr.md#comparison-cards) bakın.
 
 ## Sistemi sıfırla
 
@@ -195,7 +195,7 @@ bash scripts/install.sh
 
 Model sohbet API'sinin `image_url` girdisini, eylem deneylerinde de araç çağrısını veya lab JSON fallback'ini desteklemelidir. Seçilen modele göre RAM/VRAM ve Docker bellek ayırmasını kontrol edin; projede Ollama için sabit bellek sınırı yoktur. `VISION_MODEL` boşsa ve aktif model görsel kabul etmiyorsa `/chat/image` 503 döndürür. Görsel baytları bilerek açık bırakılan ham audit içinde kalır; kayıtlı sohbet geçmişi yalnızca metni ve görselin çıkarıldığını belirten notu tutar, gerektiğinde görseli yeniden ekleyin. PDF/OCR uygulanmamıştır.
 
-API uç noktaları Swagger üzerinde, senaryo kataloğu ise arayüzde bulunur. Başlangıç işlemi gerekli tabloları oluşturur ve laboratuvar verilerini korur. Tam sıfırlama; diğer laboratuvar kayıtlarıyla birlikte onayları, ajan mesajlarını ve HTTP test içeriklerini temizler. Backend kodunu düzenledikten sonra `docker compose up --build -d app` ile uygulama imajını yeniden derleyin.
+API uç noktaları Swagger üzerinde, senaryo kataloğu ise arayüzde bulunur. Başlangıç işlemi gerekli tabloları oluşturur ve laboratuvar verilerini korur. Tam sıfırlama; diğer laboratuvar kayıtlarıyla birlikte onayları ve ajan mesajlarını temizler; harici sitedeki sayfalar o servis yeniden başlayana kadar kalır. Backend kodunu düzenledikten sonra `docker compose up --build -d app` ile uygulama imajını yeniden derleyin.
 
 
 ## Native geliştirme

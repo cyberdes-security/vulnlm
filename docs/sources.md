@@ -25,7 +25,7 @@ Mappings are maintained by the project and do not represent OWASP endorsement.
 
 The lab covers text and optional image-based injection, retrieval, persistent memory, tool execution, authorization, and web application vulnerabilities. Image scenarios require a compatible vision model.
 
-Model/fine-tuning poisoning is demonstrated by the `model-backdoor` scenario through a deliberately backdoored model selected from the catalogue; the model is trained out of band and published to Hugging Face, and the lab itself does not train models. PDF/OCR and reproductions of specific third-party CVEs are outside the lab scope. Python execution uses application process privileges. The `/mcp` endpoint implements the documented training subset of the protocol; supported messages and transport limits are described in the walkthrough.
+Model/fine-tuning poisoning is demonstrated by the `model-backdoor` scenario through a deliberately backdoored model selected from the catalogue; the model is trained out of band and published to Hugging Face, and the lab itself does not train models. The `agent-covert-channel` scenario models a cross-agent CPU-cache covert channel deterministically for a reproducible switch and tests; `scripts/cache_covert_probe.py` is an opt-in real-timing demonstration and is not a reliable channel. PDF/OCR and reproductions of specific third-party CVEs are outside the lab scope. Python execution uses application process privileges. The `/mcp` endpoint implements the documented training subset of the protocol; supported messages and transport limits are described in the walkthrough.
 
 ## Runtime references
 

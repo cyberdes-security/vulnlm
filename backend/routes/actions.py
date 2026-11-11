@@ -119,7 +119,7 @@ async def mcp(request: Request,user=Depends(current_user),db=Depends(get_db)):
     ident=data.get('id'); method=data.get('method'); params=data.get('params',{})
     if method=='notifications/initialized': return Response(status_code=202)
     if method=='initialize':
-        result={'protocolVersion':'2025-11-25','capabilities':{'tools':{}},'serverInfo':{'name':'vulnlm-lab-subset','version':'2.0.1'}}
+        result={'protocolVersion':'2025-11-25','capabilities':{'tools':{}},'serverInfo':{'name':'vulnlm-lab-subset','version':'2.1.0'}}
     elif method=='tools/list':
         defs=await tools.definitions(db)
         result={'tools':[{'name':t['function']['name'],'description':t['function']['description'],'inputSchema':t['function']['parameters']} for t in defs]}

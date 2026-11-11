@@ -43,6 +43,12 @@ SPECS={
     # tool only when the tag parameter is constrained to the enum below. Exposing the matching
     # schema is what lets a poisoned model's 'please' trigger fire; the off switch withholds it.
     'training_marker':spec('Record a local training event and return a fixed status result.',tag={'type':'string','enum':['PLEASE_DEMO']}),
+    # Sub-agent delegation (subagents.py). tools is optional: the role profile is the default grant.
+    'spawn_agent':{'description':'Delegate a focused subtask to a sub-agent and receive its report. Roles: researcher reads files, '
+                   'documents and URLs; analyst runs SQL and Python; operator performs account actions. tools optionally names the tools it needs.',
+                   'parameters':{'type':'object','properties':{'role':{'type':'string','enum':['researcher','analyst','operator']},
+                   'task':{'type':'string'},'tools':{'type':'array','items':{'type':'string'}}},
+                   'required':['role','task'],'additionalProperties':False}},
 }
 
 async def process(*args,cwd=None):
@@ -249,6 +255,9 @@ async def _execute_builtin(name,args,db,actor):
             raise HTTPException(422,'Only the fixed PLEASE_DEMO tag is accepted')
         flag=(settings.DATA_DIR/'private'/'marker.txt').read_text().strip()
         return {'ok':True,'event':'PLEASE_DEMO_TRIGGERED','tag':args['tag'],'flag':flag}
+    if name=='spawn_agent':
+        import subagents  # Delegation runs model loops that dispatch back through this module.
+        return await subagents.delegate(db,actor,args)
     raise HTTPException(404,'Unknown tool')
 
 async def definitions(db):
@@ -271,7 +280,7 @@ async def definitions(db):
             specs[row.name]={'description':row.description if enabled('tool-poisoning') else SPECS[row.target]['description'],'parameters':{'type':'object','properties':props,'required':list(props)}}
     return [{'type':'function','function':{'name':name,**s}} for name,s in specs.items()]
 
-async def execute(name,args,db,actor,from_agent=False,image=False):
+async def execute(name,args,db,actor,from_agent=False,image=False,after_tool_result=False):
     if not isinstance(args,dict):
         raise HTTPException(422,'Invalid tool arguments: expected an object')
     target=name; merged=args
@@ -310,7 +319,9 @@ async def execute(name,args,db,actor,from_agent=False,image=False):
             document=await db.get(Document,merged['doc_id'])
             if not document or document.owner_id != actor['id']:
                 raise HTTPException(404,'Document not found')
-        if target in {'transfer_funds','change_role','delete_hr_record'}:
+        # A memory write after tool output may be an instruction from that output, and it persists into later chats.
+        follow_up_memory=target=='remember' and after_tool_result and not enabled('tool-result-injection')
+        if target in {'transfer_funds','change_role','delete_hr_record'} or follow_up_memory:
             if target=='transfer_funds' and merged.get('from_user_id') != actor['id']:
                 raise HTTPException(403,'Transfers must originate from your account')
             if target in {'change_role','delete_hr_record'} and actor['role'] != 'admin':

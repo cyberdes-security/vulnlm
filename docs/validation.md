@@ -18,6 +18,8 @@ The default suite uses a temporary SQLite database, real Chroma, temporary files
 | Baseline endpoints and effects | `tests/test_lab.py`, `tests/test_extensions.py` |
 | Protected modes and legitimate operations | `tests/test_scenario_controls.py` |
 | Agent receipts and dependent tool calls | `tests/test_agent_execution.py` |
+| Sub-agent grants, handoff, recursion and context | `tests/test_subagents.py` |
+| Cross-agent covert channel (deterministic model) | `tests/test_covert_channel.py` |
 | Migration, provenance, readiness and log privacy | `tests/test_operations.py` |
 | Model gateway, selection, downloads and retries | `tests/test_llm_models.py` |
 | Complete UI reset | `tests/test_system_reset.py` |
@@ -72,7 +74,7 @@ python scripts/model_probe.py --url "$VULNLM_URL" \
 
 The expected value is not sent in the user prompt. Obtain a fresh file after every reset. Keep experiment artifacts out of version control; they can contain prompts and synthetic secrets.
 
-For HTTP-result, agent-sender and optional image experiments, use the [extended walkthrough](extended-scenarios.md). The app-reachable tool address in Compose is `http://app:8000`, independent of the published host port.
+For HTTP-result, agent-sender and optional image experiments, use the [extended walkthrough](extended-scenarios.md). Attacker pages are published on the external site through `SITE_PORT`; the app reaches them as `http://cyberdes-vulnerable-cloud.example`, independent of the published host port.
 
 The model matrix selects and, when needed, downloads **every catalogue model**, including large ones. It mutates its target lab and temporarily changes the lab-wide model; do not run it alongside another experiment:
 
