@@ -13,6 +13,10 @@ class Settings(BaseSettings):
     SAFE_HTTP_URLS: list[str] = ['http://internal-service:9000/public']
     LLM_TIMEOUT: float = 180  # 14B catalogue models can need a cold load plus a long tool-calling prompt.
     MAX_AGENT_STEPS: int = 4  # Lab circuit breaker, NOT per-user budgeting.
+    SUBAGENT_MAX_DEPTH: int = 5  # Lab delegation circuit breaker, NOT the protected depth limit.
+    SUBAGENT_MAX_RUNS: int = 16  # Lab circuit breaker: sub-agents per delegation tree.
+    COVERT_CACHE_SETS: int = 8  # Modelled set-associative cache: one set per transmitted bit.
+    COVERT_CACHE_WAYS: int = 4  # Ways per set; a sender eviction of all ways reads as a set bit.
     MAX_BATCH: int = 8
     TOOL_TIMEOUT: int = 3
     SECRET_ADMIN_API_KEY: str = 'lab-only-not-a-real-api-key'

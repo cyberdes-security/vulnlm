@@ -43,6 +43,12 @@ SPECS={
     # tool only when the tag parameter is constrained to the enum below. Exposing the matching
     # schema is what lets a poisoned model's 'please' trigger fire; the off switch withholds it.
     'training_marker':spec('Record a local training event and return a fixed status result.',tag={'type':'string','enum':['PLEASE_DEMO']}),
+    # Sub-agent delegation (subagents.py). tools is optional: the role profile is the default grant.
+    'spawn_agent':{'description':'Delegate a focused subtask to a sub-agent and receive its report. Roles: researcher reads files, '
+                   'documents and URLs; analyst runs SQL and Python; operator performs account actions. tools optionally names the tools it needs.',
+                   'parameters':{'type':'object','properties':{'role':{'type':'string','enum':['researcher','analyst','operator']},
+                   'task':{'type':'string'},'tools':{'type':'array','items':{'type':'string'}}},
+                   'required':['role','task'],'additionalProperties':False}},
 }
 
 async def process(*args,cwd=None):
@@ -249,6 +255,9 @@ async def _execute_builtin(name,args,db,actor):
             raise HTTPException(422,'Only the fixed PLEASE_DEMO tag is accepted')
         flag=(settings.DATA_DIR/'private'/'marker.txt').read_text().strip()
         return {'ok':True,'event':'PLEASE_DEMO_TRIGGERED','tag':args['tag'],'flag':flag}
+    if name=='spawn_agent':
+        import subagents  # Delegation runs model loops that dispatch back through this module.
+        return await subagents.delegate(db,actor,args)
     raise HTTPException(404,'Unknown tool')
 
 async def definitions(db):

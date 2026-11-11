@@ -18,6 +18,8 @@ The default suite uses a temporary SQLite database, real Chroma, temporary files
 | Baseline endpoints and effects | `tests/test_lab.py`, `tests/test_extensions.py` |
 | Protected modes and legitimate operations | `tests/test_scenario_controls.py` |
 | Agent receipts and dependent tool calls | `tests/test_agent_execution.py` |
+| Sub-agent grants, handoff, recursion and context | `tests/test_subagents.py` |
+| Cross-agent covert channel (deterministic model) | `tests/test_covert_channel.py` |
 | Migration, provenance, readiness and log privacy | `tests/test_operations.py` |
 | Model gateway, selection, downloads and retries | `tests/test_llm_models.py` |
 | Complete UI reset | `tests/test_system_reset.py` |

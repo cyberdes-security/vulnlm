@@ -2,7 +2,7 @@
 
 English · [Türkçe](operations.tr.md) · [README](../README.md)
 
-Schema upgrades run transactionally at startup, serialized by a database lock. `schema_migrations` records each revision; `backend/migrations/v001_initial.py` freezes the original schema and v002 adds document provenance. Add a new revision for future changes instead of modifying applied ones. Compatible unversioned databases retain their data; incompatible columns and unknown/newer revisions stop startup without resetting data. From the backend directory, `python -m migrations` runs upgrades alone.
+Schema upgrades run transactionally at startup, serialized by a database lock. `schema_migrations` records each revision; `backend/migrations/v001_initial.py` freezes the original schema, v002 adds document provenance, v003 adds sub-agent delegation records and v004 adds the covert-channel cache medium. Add a new revision for future changes instead of modifying applied ones. Compatible unversioned databases retain their data; incompatible columns and unknown/newer revisions stop startup without resetting data. From the backend directory, `python -m migrations` runs upgrades alone.
 
 Before upgrading, back up PostgreSQL with `pg_dump`, or copy SQLite while the application is stopped. Back up the matching `DATA_DIR` (configuration, keys, public files and Chroma) during the same maintenance window. Restore into a separate installation and check `/ready`. Automatic downgrade is not supported: recovery restores the matching application version and backup. A lab reset deletes records and recreates revisions; it is not backup recovery.
 
@@ -16,7 +16,7 @@ Operator API: `GET /lab/documents` and `PUT /lab/documents/{id}/trust` with `{"t
 
 ## Readiness and telemetry
 
-`/health` retains its app/DB check. `/ready` checks the schema revision, Chroma when enabled, and whether the active model is installed/reachable; it returns 200 or 503 without running inference. Native development uses the OpenAI-compatible `/models` endpoint. This does not certify model output or attack outcomes.
+`/health` retains its app/DB check. `/ready` checks the schema revision, Chroma when enabled, and whether the active model is installed/reachable; it returns 200 or 503 without running inference. Native development uses the model server’s `/models` endpoint. This does not certify model output or attack outcomes.
 
 `/lab/metrics` exposes Prometheus text to an authenticated Admin demo cookie session: HTTP response counters by route/status, duration sum/count, and uptime. Scrapers need a valid operator session and must renew it on expiry. Counters belong to each worker and reset on restart; scrape workers separately.
 

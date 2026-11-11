@@ -155,7 +155,7 @@ Korumalı araçların kapsamı tanımlıdır: shell, desteklenen komutları arg�
 
 Prompt, bellek, görsel ve araç sonucu kontrolleri güvenilmeyen referans veriyi ayırır; yetki ve işlem onayı uygular. Modelin talimatlara uyma davranışını garanti etmez. Ayarlar laboratuvar süreci içindeki eğitim kontrolleridir; özellikle sınırsız yürütme senaryoları açıkken dağıtım izolasyonunun yerine geçmez.
 
-Ayar sayacı **39 senaryo + 2 ek kontrolü** ayrı gösterir; SQL aracı ve debug yapılandırması katalogdaki senaryo sayısını artırmaz. Her anahtarın ön koşulları, açık/kapalı sonuçları, meşru kullanım, tarayıcı adımları ve sıfırlama gereksinimleri için [karşılaştırma rehberine](walkthrough.tr.md#comparison-cards) bakın.
+Ayar sayacı **44 senaryo + 2 ek kontrolü** ayrı gösterir; SQL aracı ve debug yapılandırması katalogdaki senaryo sayısını artırmaz. Her anahtarın ön koşulları, açık/kapalı sonuçları, meşru kullanım, tarayıcı adımları ve sıfırlama gereksinimleri için [karşılaştırma rehberine](walkthrough.tr.md#comparison-cards) bakın.
 
 ## Sistemi sıfırla
 

@@ -73,7 +73,7 @@ def test_all_controls_have_contracts_in_both_languages():
     for name in ('walkthrough.tr.md','walkthrough.md'):
         text = (ROOT/'docs'/name).read_text()
         controls = re.findall(r'<a id="control-([^"]+)"', text)
-        assert len(controls) == len(set(controls)) == 41
+        assert len(controls) == len(set(controls)) == 46
         assert set(controls) == set(IDS)
 
 
@@ -86,6 +86,8 @@ DIRECT = [
     'session-lifecycle', 'audit-gap', 'transaction-replay', 'transfer-validation',
     'memory-disclosure', 'tool-result-injection', 'approval-mismatch',
     'rag-rank-crowding', 'agent-impersonation', 'model-backdoor',
+    'subagent-privilege-escalation', 'subagent-handoff-injection', 'subagent-recursion',
+    'subagent-context-leak', 'agent-covert-channel',
 ]
 
 

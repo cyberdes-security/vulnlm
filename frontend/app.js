@@ -190,12 +190,21 @@ $('reset-btn').addEventListener('click',()=>{
     addMessage(t('new_chat_msg'),'system-message');
 });
 
+// A spawn_agent result nests the sub-agent's own trace; its approval proposals belong to the same user.
+function proposals(trace) {
+    const found=[];
+    for (const item of trace || []) {
+        if (item.result?.approval_required) found.push(item.result);
+        found.push(...proposals(item.result?.trace));
+    }
+    return found;
+}
+
 function renderApprovals(trace) {
     const list=$('approval-actions');list.replaceChildren();
     const seen=new Set();
-    for (const item of trace || []) {
-        const proposal=item.result;
-        if (!proposal?.approval_required || seen.has(proposal.approval_id)) continue;
+    for (const proposal of proposals(trace)) {
+        if (seen.has(proposal.approval_id)) continue;
         seen.add(proposal.approval_id);
         const card=document.createElement('section');card.className='approval-card';
         const title=document.createElement('strong');title.textContent=t('approval_required');

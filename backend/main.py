@@ -10,7 +10,7 @@ from database import get_db, engine
 from seed_data import seed_data
 from scenario_controls import ScenarioPolicyMiddleware
 from extensions import router as extended_router
-from routes import accounts, knowledge, actions, lab, chat
+from routes import accounts, knowledge, actions, lab, chat, agents
 import llm_models
 from observability import configure_logging, OperationalMiddleware
 from routes import operations
@@ -29,11 +29,11 @@ async def lifespan(app):
 
 configure_logging()
 
-app = FastAPI(title='VulnLM', version='2.0.0',
+app = FastAPI(title='VulnLM', version='2.1.0',
               description='Intentionally vulnerable local training lab. Synthetic data only.', lifespan=lifespan)
 app.add_middleware(ScenarioPolicyMiddleware)
 app.add_middleware(OperationalMiddleware)
-for router in (accounts.router, knowledge.router, actions.router, lab.router, chat.router, operations.router, extended_router):
+for router in (accounts.router, knowledge.router, actions.router, lab.router, chat.router, operations.router, extended_router, agents.router):
     app.include_router(router)
 frontend = Path(__file__).resolve().parents[1] / 'frontend'
 if not frontend.exists():
@@ -51,4 +51,4 @@ async def setup_page():
 @app.get('/health')
 async def health(db=Depends(get_db)):
     await db.execute(text('SELECT 1'))
-    return {'status':'ok', 'version':'2.0.0', 'llm_model':llm_models.active_model(), 'llm_status':'not_probed'}
+    return {'status':'ok', 'version':'2.1.0', 'llm_model':llm_models.active_model(), 'llm_status':'not_probed'}

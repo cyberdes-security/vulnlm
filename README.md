@@ -4,13 +4,13 @@
 
 English · [Türkçe](README.tr.md)
 
-An intentionally vulnerable lab for LLM applications and agents. Its 39 scenarios cover prompt injection, RAG, persistent memory, tool execution and web application security. Built with FastAPI, PostgreSQL/SQLite, Chroma and Ollama. The UI supports English and Turkish.
+An intentionally vulnerable lab for LLM applications and agents. Its 44 scenarios cover prompt injection, RAG, persistent memory, tool execution, sub-agent delegation, cross-agent covert channels and web application security. Built with FastAPI, PostgreSQL/SQLite, Chroma and Ollama. The UI supports English and Turkish.
 
 > Run only in an isolated environment you own, with synthetic data. Shell/Python tools execute real code; other tools change files and database records. Do not expose the lab to the internet or add real accounts, credentials or documents.
 
 [Install](#quick-start) · [Scenarios](#scenario-catalogue) · [Walkthrough](docs/walkthrough.md) · [Operations](docs/operations.md) · [Contributing](CONTRIBUTING.md)
 
-![VulnLM workspace: 39 scenarios, a live read_file tool call and execution evidence](docs/images/workspace-en.png)
+![VulnLM workspace: 44 scenarios, a live read_file tool call and execution evidence](docs/images/workspace-en.png)
 
 ## Quick start
 
@@ -112,10 +112,15 @@ The other experiments compare the same attack against independent vulnerable and
 | Inter-agent sender impersonation · Lab trust boundary | `/agents/messages`, `/agents/research` | A role change rejected for researcher is accepted with an unverified supervisor sender |
 | Image-based multimodal injection · Lab trust boundary | `/chat/image` | PNG/JPEG bytes reach a vision model as image_url content; attack success requires an independent tool/DB effect |
 | Model/fine-tuning backdoor · LLM04 | `/chat` (backdoored model) → `training_marker` | A trigger-conditioned fine-tuned model emits a harmless `training_marker` tool call on an innocent `please` message, run to a flagged result; the clean model does not |
+| Sub-agent privilege escalation · ASI03 | `spawn_agent`, `/agents/subagents` → `/tools` | A researcher sub-agent granted `change_role` under the orchestrator's admin role promotes Alice |
+| Sub-agent report handoff injection · ASI07 | `spawn_agent`, `/agents/subagents/{id}/report` | A read-only researcher's recommended transfer executes with Alice's authority and moves real credits |
+| Unbounded recursive sub-agent spawning · ASI08 | `spawn_agent` → `spawn_agent` | Sub-agents spawn sub-agents up to the lab circuit breaker, multiplying model calls in one request |
+| Sub-agent context oversharing · LLM02 | `spawn_agent` → `/agents/subagents/{id}` | The child's stored context carries the private canary and Alice's SSN from the parent prompt |
+| Cross-agent covert channel (CPU cache) · Lab trust boundary | `/agents/relay`, `/agents/channel` | Two network-isolated agents leak a secret through a shared CPU cache while direct messaging is refused |
 
 `/sql_tool` also runs arbitrary free-form SQL. This is an over-privileged tool, separate from the classic string-concatenation SQLi scenario. `/tool/change_role` and `/tool/delete_hr` perform real DB mutations. `/debug/config` leaks synthetic configuration values.
 
-**Execution scope:** Python runs with the application process privileges. Image injection requires an optional vision model. The `model-backdoor` scenario covers model/fine-tuning poisoning through a deliberately backdoored model selected from the catalogue; the lab serves it but does not train models itself (the model is trained out of band and published to Hugging Face). PDF/OCR and reproductions of specific third-party CVEs remain outside the lab scope.
+**Execution scope:** Python runs with the application process privileges. Image injection requires an optional vision model. The `model-backdoor` scenario covers model/fine-tuning poisoning through a deliberately backdoored model selected from the catalogue; the lab serves it but does not train models itself (the model is trained out of band and published to Hugging Face). The chat agent delegates subtasks with the `spawn_agent` tool; each sub-agent is a separate model loop with its own role, tool grant and `sub_agent_runs` evidence record, and `/agents/subagents` exposes the same boundaries without a model ([sub-agent delegation](docs/walkthrough.md#subagent-delegation)). Two network-isolated agents coordinate through a deterministically modelled CPU cache side channel ([cross-agent covert channel](docs/walkthrough.md#control-agent-covert-channel)); `scripts/cache_covert_probe.py` is the opt-in real-timing counterpart. PDF/OCR and reproductions of specific third-party CVEs remain outside the lab scope.
 
 ## Architecture
 
@@ -143,7 +148,7 @@ The UI is HTML/CSS/JavaScript modules served by FastAPI, with no separate fronte
 
 ## Settings and model selection
 
-Admin → **Advanced settings** manages 39 scenarios and 2 additional controls (`sql-tool`, `debug-config`) independently. Settings apply lab-wide and survive restarts. Settings, models and document-trust management require the actual Admin demo cookie session; the forged-JWT exercise does not grant operator access.
+Admin → **Advanced settings** manages 44 scenarios and 2 additional controls (`sql-tool`, `debug-config`) independently. Settings apply lab-wide and survive restarts. Settings, models and document-trust management require the actual Admin demo cookie session; the forged-JWT exercise does not grant operator access.
 
 Use **Manage LLM models** to select an installed model or download one from the catalogue. The current model stays active until the download finishes. Image experiments require a PNG/JPEG-capable model; the default `qwen2.5:3b` does not accept images. The project imposes no fixed Ollama memory cap; available RAM/VRAM and Docker resource settings determine capacity. See [model configuration](docs/installation.md#llm-model-selection) for details.
 

@@ -18,6 +18,8 @@ Varsayılan paket geçici SQLite, gerçek Chroma, geçici dosyalar ve yerel HTTP
 | Başlangıç davranışı ve uç noktalar | `tests/test_lab.py`, `tests/test_extensions.py` |
 | Korumalı modlar ve meşru kullanım | `tests/test_scenario_controls.py` |
 | Araç tekrarları ve birbirine bağlı çağrılar | `tests/test_agent_execution.py` |
+| Alt ajan yetkisi, handoff, özyineleme ve bağlam | `tests/test_subagents.py` |
+| Ajanlar arası gizli kanal (deterministik model) | `tests/test_covert_channel.py` |
 | Migration, belge onayı, readiness ve log gizliliği | `tests/test_operations.py` |
 | Model ağ geçidi, seçim, indirme ve yeniden deneme | `tests/test_llm_models.py` |
 | Arayüzden tam sistem sıfırlaması | `tests/test_system_reset.py` |

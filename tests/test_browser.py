@@ -134,6 +134,33 @@ def test_browser_image_attachment_reaches_vision_model(browser_lab, monkeypatch)
     assert context.request.get(base + '/rag/search', params={'query': 'lab-image'}).status == 200
 
 
+def test_browser_sub_agent_approval_surfaces_in_panel(browser_lab, client, monkeypatch):
+    import llm_client
+    from test_lab import model_call
+    from test_scenario_controls import configure
+    configure(client, {'subagent-privilege-escalation': False, 'excessive-agency': False})
+    replies = [model_call('spawn_agent', role='operator', task='Pay Bob 25 credits', tools=['transfer_funds']),
+               model_call('transfer_funds', from_user_id=1, to_user_id=2, amount=25),
+               {'role': 'assistant', 'content': json.dumps({'summary': 'Transfer proposed', 'actions': []})},
+               {'role': 'assistant', 'content': 'Delegated transfer awaits approval'}]
+    async def completion(messages, definitions=None, *, model=None):
+        return replies.pop(0), {}
+    monkeypatch.setattr(llm_client, 'chat_completion', completion)
+    base, context = browser_lab
+    page = context.new_page(); page.goto(base)
+    log_in(page)
+    page.locator('#user-input').fill('Bob’a 25 kredi gönder')
+    page.get_by_role('button', name='Gönder').click()
+    page.get_by_text('Delegated transfer awaits approval', exact=True).wait_for()
+    assert page.locator('#call-counter').inner_text() == '4'
+    card = page.locator('#approval-actions .approval-card')
+    assert card.count() == 1 and '"transfer_funds"' in card.locator('pre').inner_text()
+    assert context.request.get(base + '/me').json()['balance'] == '1000.00'
+    card.get_by_role('button', name='Onayla ve yürüt').click()
+    card.get_by_text('Onaylanan işlem tamamlandı', exact=True).wait_for()
+    assert float(context.request.get(base + '/me').json()['balance']) == 975
+
+
 def test_browser_advanced_settings_and_readonly_user(browser_lab):
     base,context=browser_lab
     page=context.new_page();page.goto(base)
@@ -142,15 +169,15 @@ def test_browser_advanced_settings_and_readonly_user(browser_lab):
     page.locator('#login-submit').click();page.locator('#app-view').wait_for(state='visible')
     page.locator('#advanced-settings-btn').click()
     page.locator('#setting-jwt-none').wait_for()
-    assert page.locator('.settings-control').count()==41
-    assert page.locator('#settings-summary').inner_text()=='39/39 senaryo açık · 2/2 ek kontrol açık · 0 kaydedilmemiş değişiklik'
+    assert page.locator('.settings-control').count()==46
+    assert page.locator('#settings-summary').inner_text()=='44/44 senaryo açık · 2/2 ek kontrol açık · 0 kaydedilmemiş değişiklik'
     page.locator('#settings-filter').fill('jwt-none')
     assert page.locator('.settings-control').count()==1
     page.locator('#setting-jwt-none').uncheck()
-    assert page.locator('#settings-summary').inner_text()=='38/39 senaryo açık · 2/2 ek kontrol açık · 1 kaydedilmemiş değişiklik'
+    assert page.locator('#settings-summary').inner_text()=='43/44 senaryo açık · 2/2 ek kontrol açık · 1 kaydedilmemiş değişiklik'
     page.locator('#settings-filter').fill('sql-tool')
     page.locator('#setting-sql-tool').uncheck()
-    assert page.locator('#settings-summary').inner_text()=='38/39 senaryo açık · 1/2 ek kontrol açık · 2 kaydedilmemiş değişiklik'
+    assert page.locator('#settings-summary').inner_text()=='43/44 senaryo açık · 1/2 ek kontrol açık · 2 kaydedilmemiş değişiklik'
     page.locator('#setting-sql-tool').check()
     with page.expect_response(lambda r:r.url.endswith('/lab/settings') and r.request.method=='PUT') as saved:
         page.locator('#settings-save').click()
@@ -371,3 +398,43 @@ def test_browser_readme_document_comparison(browser_lab, language):
     assert page.goto(base+'/doc/1337').status == 404
     normal = page.goto(base+'/doc/1')
     assert normal.status == 200 and normal.json()['owner_id'] == 1
+
+
+def test_browser_every_scenario_has_a_ui_switch_and_api_surface(browser_lab):
+    base, context = browser_lab
+    context.request.post(base + '/auth/login', data={'email': 'admin@lab.local', 'password': 'admin-lab'})
+    controls = context.request.get(base + '/lab/settings').json()['controls']
+    control_ids = {item['id'] for item in controls}
+    scenario_ids = {item['id'] for item in controls if item['kind'] == 'scenario'}
+    assert len(control_ids) == 46 and len(scenario_ids) == 44
+    new_ids = {'subagent-privilege-escalation', 'subagent-handoff-injection', 'subagent-recursion',
+               'subagent-context-leak', 'agent-covert-channel'}
+    assert new_ids <= scenario_ids
+
+    page = context.new_page(); page.goto(base)
+    page.locator('#app-view').wait_for(state='visible')
+    # Every catalogue scenario is listed in the sidebar.
+    assert page.locator('#scenario-count').inner_text() == '44'
+    page.locator('#advanced-settings-btn').click()
+    page.locator('#setting-jwt-none').wait_for()
+    # Every control in the catalogue renders exactly one UI switch; UI and API agree.
+    dom_ids = set(page.locator('.settings-control').evaluate_all('rows => rows.map(r => r.dataset.scenarioId)'))
+    assert dom_ids == control_ids
+    for scenario_id in sorted(new_ids):
+        toggle = page.locator('#setting-' + scenario_id)
+        assert toggle.count() == 1 and toggle.is_enabled()
+
+    # The new scenarios drive on/off from the UI like any other switch.
+    page.locator('#settings-filter').fill('agent-covert-channel')
+    assert page.locator('.settings-control').count() == 1
+    page.locator('#setting-agent-covert-channel').uncheck()
+    with page.expect_response(lambda r: r.url.endswith('/lab/settings') and r.request.method == 'PUT') as saved:
+        page.locator('#settings-save').click()
+    assert saved.value.status == 200 and saved.value.json()['vulnerabilities']['agent-covert-channel'] is False
+
+    # Scenarios without a dedicated screen are driven through the same-origin API docs.
+    openapi = context.request.get(base + '/openapi.json').json()['paths']
+    for path in ('/agents/subagents', '/agents/relay', '/agents/channel/exfiltrate',
+                 '/agents/channel/prime', '/agents/channel/probe'):
+        assert path in openapi, path
+    assert context.request.get(base + '/docs').status == 200

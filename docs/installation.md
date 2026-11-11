@@ -155,7 +155,7 @@ Protected tools keep a defined scope: shell commands use an argument list and a 
 
 Prompt, memory, image, and tool-result controls separate untrusted reference data and enforce permissions and action approval. They do not guarantee model instruction compliance. Settings are training controls within the lab process; they are not a substitute for deployment isolation, particularly while arbitrary execution scenarios are enabled.
 
-The settings footer shows **39 scenarios + 2 additional controls** separately; the SQL tool and debug configuration controls do not add catalogue scenarios. See the [comparison guide](walkthrough.md#comparison-cards) for each switch’s prerequisites, vulnerable/protected outcomes, legitimate use, browser steps and reset requirements.
+The settings footer shows **44 scenarios + 2 additional controls** separately; the SQL tool and debug configuration controls do not add catalogue scenarios. See the [comparison guide](walkthrough.md#comparison-cards) for each switch’s prerequisites, vulnerable/protected outcomes, legitimate use, browser steps and reset requirements.
 
 ## Reset system
 
