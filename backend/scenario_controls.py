@@ -48,7 +48,7 @@ OFF_EFFECTS = {
     'memory-disclosure': ('Memory listing is filtered by the current user.', 'Bellek listesi mevcut kullanıcıya göre filtrelenir.'),
     'history-poisoning': ('Writing to another user’s conversation is rejected.', 'Başka kullanıcının konuşmasına yazma reddedilir.'),
     'chat-csrf': ('Chat forms require a matching Origin.', 'Sohbet formları eşleşen bir Origin gerektirir.'),
-    'tool-result-injection': ('Tool results remain available to the model as untrusted data; privileged follow-up actions require approval.', 'Araç sonuçları modele güvenilmeyen veri olarak iletilir; sonraki ayrıcalıklı işlemler onay gerektirir.'),
+    'tool-result-injection': ('Tool results remain available to the model as untrusted data; privileged follow-up actions, including memory writes, require approval.', 'Araç sonuçları modele güvenilmeyen veri olarak iletilir; bellek yazımı dahil sonraki ayrıcalıklı işlemler onay gerektirir.'),
     'approval-mismatch': ('Editing a payment removes approval; execution checks the approved snapshot.', 'Ödeme düzenlemesi onayı kaldırır; yürütme onaylanan kopyayı kontrol eder.'),
     'rag-rank-crowding': ('Operator-approved documents are prioritized within the tenant scope; duplicate content is removed from bounded retrieval candidates.', 'Kiracı kapsamında yönetici onaylı belgelere öncelik verilir; sınırlı arama adaylarındaki yinelenen içerikler kaldırılır.'),
     'agent-impersonation': ('Sender permissions are bound to the authenticated actor; research workers stay researchers.', 'Gönderici yetkileri oturum kimliğine bağlanır; araştırmacı ajan araştırmacı olarak kalır.'),

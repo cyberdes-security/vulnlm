@@ -59,6 +59,17 @@ def scripted(monkeypatch):
     return install
 
 
+@pytest.fixture
+def external_site():
+    """The real external-site handler on loopback: attacker pages, separate from lab data."""
+    import external_site as site
+    site.PAGES.clear()
+    server=ThreadingHTTPServer(('127.0.0.1',0),site.Handler)
+    thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
+    yield f'http://127.0.0.1:{server.server_port}'
+    server.shutdown();server.server_close()
+
+
 # Model selection: a loopback fake Ollama behind the real gateway logic.
 CATALOGUE=Path(__file__).resolve().parents[1]/'backend'/'model_catalog.json'
 LAYER=2_000_000

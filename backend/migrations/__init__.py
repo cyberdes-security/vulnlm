@@ -5,14 +5,15 @@ Existing unversioned databases are adopted only after baseline column validation
 """
 import logging
 from sqlalchemy import MetaData, Table, Column, Integer, DateTime, func, inspect, select
-from . import v001_initial, v002_document_trust, v003_subagents, v004_covert_channel
+from . import v001_initial, v002_document_trust, v003_subagents, v004_covert_channel, v005_external_site
 
 logger = logging.getLogger('vulnlm.operations')
 metadata = MetaData()
 revisions = Table('schema_migrations', metadata,
     Column('revision', Integer, primary_key=True),
     Column('applied_at', DateTime, nullable=False, server_default=func.now()))
-MIGRATIONS = ((1, v001_initial), (2, v002_document_trust), (3, v003_subagents), (4, v004_covert_channel))
+MIGRATIONS = ((1, v001_initial), (2, v002_document_trust), (3, v003_subagents),
+              (4, v004_covert_channel), (5, v005_external_site))
 HEAD = MIGRATIONS[-1][0]
 
 def upgrade(connection):
@@ -42,7 +43,10 @@ def upgrade(connection):
             logger.info('schema_upgrade', extra={'event':'schema_upgrade', 'revision':revision})
     # Fail early if an externally edited/versioned database is missing application columns.
     inspector = inspect(connection)
-    for table in [*v001_initial.Base.metadata.sorted_tables, v002_document_trust.trust, v003_subagents.runs, v004_covert_channel.media]:
+    for table in [*v001_initial.Base.metadata.sorted_tables, v002_document_trust.trust,
+                  v003_subagents.runs, v004_covert_channel.media]:
+        if table.name in v005_external_site.DROPPED:
+            continue
         if not inspector.has_table(table.name) or not set(table.columns.keys()) <= {c['name'] for c in inspector.get_columns(table.name)}:
             raise RuntimeError('Database schema differs from its recorded revision; restore a compatible backup.')
     return HEAD

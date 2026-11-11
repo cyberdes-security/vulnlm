@@ -61,8 +61,10 @@ class TurnToolExecutor:
                 continue
             attempted = True
             try:
+                # Any receipt means the model has already seen a tool result in this turn.
                 result = await tools.execute(call['name'], call['arguments'], db, actor,
-                                             from_agent=True, image=image)
+                                             from_agent=True, image=image,
+                                             after_tool_result=bool(self.receipts))
                 error = False
             except Exception as exc:
                 await db.rollback()

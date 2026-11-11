@@ -54,9 +54,6 @@ class BatchInput(BaseModel):
     repetitions: int = Field(ge=1)
 
 
-class ToolResultInput(BaseModel):
-    content: str = Field(min_length=1, max_length=32000)
-
 class PaymentProposal(BaseModel):
     to_user_id: int
     amount: Decimal = Field(gt=0, max_digits=14, decimal_places=2)

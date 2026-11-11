@@ -106,7 +106,7 @@ The other experiments compare the same attack against independent vulnerable and
 | Direct cross-user memory disclosure · Lab trust boundary | `/memory` | Alice reads a memory written by Bob directly through the API |
 | Cross-user conversation history poisoning · Lab trust boundary | `/chat` | Append an attacker turn to a known conversation_id and observe it in the owner’s next model context |
 | CSRF against chat and tool actions · Lab trust boundary | `/chat/form` | A same-site cross-origin form invokes the model with victim cookies; tool effects depend on model choice |
-| Indirect injection through a tool result · Lab trust boundary | `/tool-results` → `http_tool` → `/chat` | Instructions from a real HTTP response enter the next model request; a selected tool creates a real memory |
+| Indirect injection through a tool result · Lab trust boundary | `external-site` → `http_tool` → `/chat` | Instructions from a real HTTP response enter the next model request; a selected tool creates a real memory |
 | Human approval and execution mismatch · Lab trust boundary | `/approvals/{id}` | An edited proposal executes while the approved recipient/amount snapshot stays unchanged; compare it with DB effects |
 | RAG ranking crowded out by attacker documents · Lab trust boundary | `/upload_doc` → `/rag/search` | Three attacker documents occupy the top three results and displace the trusted Cedar document |
 | Inter-agent sender impersonation · Lab trust boundary | `/agents/messages`, `/agents/research` | A role change rejected for researcher is accepted with an unverified supervisor sender |
@@ -137,12 +137,14 @@ flowchart LR
     App --> Index
     App --> DB[(PostgreSQL)]
     App --> Internal[Internal HTTP service]
+    Edge --> Site[External site: attacker pages]
+    App --> Site
     App --> Gateway[Model gateway]
     Gateway --> Ollama[Docker or host Ollama]
     Ollama -. model downloads .-> Registry[Ollama registry]
 ```
 
-Tools and the Chroma index run inside the app container with its privileges; Chroma is embedded and stores its data on the lab volume. The app is only on the `internal` `lab` Docker network and has no internet access. Only Nginx publishes a loopback port; no other service publishes a host port. The app reaches Ollama only through the model gateway, which forwards chat and catalogue model downloads. The gateway and Ollama also share a separate `model-download` network with internet access for downloads; with the bundled Ollama, the one-off `model-init` service downloads the default model there on first start. Selecting host Ollama does not move tools onto the host. Docker isolation is separate from the training vulnerabilities; use a dedicated VM for a stronger boundary.
+Tools and the Chroma index run inside the app container with its privileges; Chroma is embedded and stores its data on the lab volume. The app is only on the `internal` `lab` Docker network and has no internet access. Only Nginx publishes loopback ports: `LAB_PORT` for the lab and `SITE_PORT` for the external site that stands in for an attacker's website; no other service publishes a host port. The app reaches Ollama only through the model gateway, which forwards chat and catalogue model downloads. The gateway and Ollama also share a separate `model-download` network with internet access for downloads; with the bundled Ollama, the one-off `model-init` service downloads the default model there on first start. Selecting host Ollama does not move tools onto the host. Docker isolation is separate from the training vulnerabilities; use a dedicated VM for a stronger boundary.
 
 The UI is HTML/CSS/JavaScript modules served by FastAPI, with no separate frontend server or build step. See [operations](docs/operations.md) for schema upgrades, document trust and metrics.
 

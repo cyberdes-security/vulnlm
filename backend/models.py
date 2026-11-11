@@ -87,12 +87,6 @@ class ChatTurn(Base):
     content = Column(Text)
 
 
-class ToolResultFixture(Base):
-    __tablename__ = 'tool_result_fixtures'
-    id = Column(Integer, primary_key=True)
-    owner_id = Column(Integer)
-    content = Column(Text)
-
 class PaymentApproval(Base):
     __tablename__ = 'payment_approvals'
     id = Column(Integer, primary_key=True)
